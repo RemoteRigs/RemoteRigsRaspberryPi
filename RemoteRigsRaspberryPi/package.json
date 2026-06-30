@@ -1,0 +1,17 @@
+{
+  "name": "engine-core",
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "private": false,
+  "dependencies": {
+    "@microsoft/signalr": "^8.0.7",
+    "axios": "^1.13.2",
+    "pigpio": "^3.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3"
+  }
+}

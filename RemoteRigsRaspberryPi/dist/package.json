@@ -1,0 +1,20 @@
+{
+  "name": "remoterigs-raspberrypi",
+  "type": "module",
+  "version": "0.1.1",
+  "main": "./index.js",
+  "files": [
+    "index.js",
+    "src/**/*.js",
+    "src/config.json.default"
+  ],
+  "exports": {
+    ".": "./src/server.js"
+  },
+  "private": false,
+  "dependencies": {
+    "@microsoft/signalr": "^8.0.7",
+    "axios": "^1.13.2",
+    "pigpio": "^3.3.1"
+  }
+}
