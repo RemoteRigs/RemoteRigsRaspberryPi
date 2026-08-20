@@ -1,57 +1,48 @@
-
-export enum StatusType {
-    RigComponentNumber = 1,
-    RigComponentStates = 2,
-    RigOnline = 3,
-    RigModelLoaded = 4,
-    RigLog = 5,
-    RigOperator = 6,
-    RigComponentCamera = 7,
-    WorldStatus = 100,
-    WorldQueuePositions = 101,
-    WorldActiveSession = 102,
-}
-export class ComponentStatusViewModel implements IComponentStatusViewModel {
-    id!: number;
-    componentId!: number;
-    name!: string;
-    type!: StatusType;
-    states!: ComponentStatusStateViewModel[];
-
-    constructor(data?: IComponentStatusViewModel) {
+export var StatusType;
+(function (StatusType) {
+    StatusType[StatusType["RigComponentNumber"] = 1] = "RigComponentNumber";
+    StatusType[StatusType["RigComponentStates"] = 2] = "RigComponentStates";
+    StatusType[StatusType["RigOnline"] = 3] = "RigOnline";
+    StatusType[StatusType["RigModelLoaded"] = 4] = "RigModelLoaded";
+    StatusType[StatusType["RigLog"] = 5] = "RigLog";
+    StatusType[StatusType["RigOperator"] = 6] = "RigOperator";
+    StatusType[StatusType["RigComponentCamera"] = 7] = "RigComponentCamera";
+    StatusType[StatusType["WorldStatus"] = 100] = "WorldStatus";
+    StatusType[StatusType["WorldQueuePositions"] = 101] = "WorldQueuePositions";
+    StatusType[StatusType["WorldActiveSession"] = 102] = "WorldActiveSession";
+})(StatusType || (StatusType = {}));
+export class ComponentStatusViewModel {
+    constructor(data) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
+                    this[property] = data[property];
             }
         }
         if (!data) {
             this.states = [];
         }
     }
-
-    init(_data?: any) {
+    init(_data) {
         if (_data) {
             this.id = _data["id"];
             this.componentId = _data["componentId"];
             this.name = _data["name"];
             this.type = _data["type"];
             if (Array.isArray(_data["states"])) {
-                this.states = [] as any;
+                this.states = [];
                 for (let item of _data["states"])
-                    this.states!.push(ComponentStatusStateViewModel.fromJS(item));
+                    this.states.push(ComponentStatusStateViewModel.fromJS(item));
             }
         }
     }
-
-    static fromJS(data: any): ComponentStatusViewModel {
+    static fromJS(data) {
         data = typeof data === 'object' ? data : {};
         let result = new ComponentStatusViewModel();
         result.init(data);
         return result;
     }
-
-    toJSON(data?: any) {
+    toJSON(data) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["componentId"] = this.componentId;
@@ -60,160 +51,105 @@ export class ComponentStatusViewModel implements IComponentStatusViewModel {
         if (Array.isArray(this.states)) {
             data["states"] = [];
             for (let item of this.states)
-                data["states"].push(item ? item.toJSON() : undefined as any);
+                data["states"].push(item ? item.toJSON() : undefined);
         }
         return data;
     }
 }
-
-export interface IComponentStatusViewModel {
-    id: number;
-    componentId: number;
-    name: string;
-    type: StatusType;
-    states: ComponentStatusStateViewModel[];
-}
-
-export class ComponentStatusStateViewModel implements IComponentStatusStateViewModel {
-    id!: number;
-    name!: string;
-
-    constructor(data?: IComponentStatusStateViewModel) {
+export class ComponentStatusStateViewModel {
+    constructor(data) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
+                    this[property] = data[property];
             }
         }
     }
-
-    init(_data?: any) {
+    init(_data) {
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
         }
     }
-
-    static fromJS(data: any): ComponentStatusStateViewModel {
+    static fromJS(data) {
         data = typeof data === 'object' ? data : {};
         let result = new ComponentStatusStateViewModel();
         result.init(data);
         return result;
     }
-
-    toJSON(data?: any) {
+    toJSON(data) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
         return data;
     }
 }
-
-export interface IComponentStatusStateViewModel {
-    id: number;
-    name: string;
-}
-
-export class ClientRTCConfigurationViewModel implements IClientRTCConfigurationViewModel {
-    stunServer!: string;
-    turnServer!: string;
-
-    constructor(data?: IClientRTCConfigurationViewModel) {
+export class ClientRTCConfigurationViewModel {
+    constructor(data) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
+                    this[property] = data[property];
             }
         }
     }
-
-    init(_data?: any) {
+    init(_data) {
         if (_data) {
             this.stunServer = _data["stunServer"];
             this.turnServer = _data["turnServer"];
         }
     }
-
-    static fromJS(data: any): ClientRTCConfigurationViewModel {
+    static fromJS(data) {
         data = typeof data === 'object' ? data : {};
         let result = new ClientRTCConfigurationViewModel();
         result.init(data);
         return result;
     }
-
-    toJSON(data?: any) {
+    toJSON(data) {
         data = typeof data === 'object' ? data : {};
         data["stunServer"] = this.stunServer;
         data["turnServer"] = this.turnServer;
         return data;
     }
 }
-
-export interface IClientRTCConfigurationViewModel {
-    stunServer: string;
-    turnServer: string;
-}
-
-export class StatusModel implements IStatusModel {
-    value?: any | undefined;
-    type!: StatusType;
-
-    constructor(data?: IStatusModel) {
+export class StatusModel {
+    constructor(data) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
+                    this[property] = data[property];
             }
         }
     }
-
-    init(_data?: any) {
+    init(_data) {
         if (_data) {
             this.value = _data["value"];
             this.type = _data["type"];
         }
     }
-
-    static fromJS(data: any): StatusModel {
+    static fromJS(data) {
         data = typeof data === 'object' ? data : {};
         let result = new StatusModel();
         result.init(data);
         return result;
     }
-
-    toJSON(data?: any) {
+    toJSON(data) {
         data = typeof data === 'object' ? data : {};
         data["value"] = this.value;
         data["type"] = this.type;
         return data;
     }
 }
-
-export interface IStatusModel {
-    value?: any | undefined;
-    type: StatusType;
-}
-
-export class RigComponentStatusModel implements IRigComponentStatusModel {
-    rigId!: number;
-    worldId?: number | undefined;
-    componentId!: number;
-    statusId!: number;
-    componentDefinitionStatusName!: string;
-    componentName!: string;
-    value?: number | undefined;
-    valueStr!: string;
-
-    constructor(data?: IRigComponentStatusModel) {
+export class RigComponentStatusModel {
+    constructor(data) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
+                    this[property] = data[property];
             }
         }
     }
-
-    init(_data?: any) {
+    init(_data) {
         if (_data) {
             this.rigId = _data["rigId"];
             this.worldId = _data["worldId"];
@@ -225,15 +161,13 @@ export class RigComponentStatusModel implements IRigComponentStatusModel {
             this.valueStr = _data["valueStr"];
         }
     }
-
-    static fromJS(data: any): RigComponentStatusModel {
+    static fromJS(data) {
         data = typeof data === 'object' ? data : {};
         let result = new RigComponentStatusModel();
         result.init(data);
         return result;
     }
-
-    toJSON(data?: any) {
+    toJSON(data) {
         data = typeof data === 'object' ? data : {};
         data["rigId"] = this.rigId;
         data["worldId"] = this.worldId;
@@ -246,78 +180,44 @@ export class RigComponentStatusModel implements IRigComponentStatusModel {
         return data;
     }
 }
-
-export interface IRigComponentStatusModel {
-    rigId: number;
-    worldId?: number | undefined;
-    componentId: number;
-    statusId: number;
-    componentDefinitionStatusName: string;
-    componentName: string;
-    value?: number | undefined;
-    valueStr: string;
-}
-
-export class RigModelLoadedModel implements IRigModelLoadedModel {
-    rigId!: number;
-    rigModelVersion?: number | undefined;
-
-    constructor(data?: IRigModelLoadedModel) {
+export class RigModelLoadedModel {
+    constructor(data) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
+                    this[property] = data[property];
             }
         }
     }
-
-    init(_data?: any) {
+    init(_data) {
         if (_data) {
             this.rigId = _data["rigId"];
             this.rigModelVersion = _data["rigModelVersion"];
         }
     }
-
-    static fromJS(data: any): RigModelLoadedModel {
+    static fromJS(data) {
         data = typeof data === 'object' ? data : {};
         let result = new RigModelLoadedModel();
         result.init(data);
         return result;
     }
-
-    toJSON(data?: any) {
+    toJSON(data) {
         data = typeof data === 'object' ? data : {};
         data["rigId"] = this.rigId;
         data["rigModelVersion"] = this.rigModelVersion;
         return data;
     }
 }
-
-export interface IRigModelLoadedModel {
-    rigId: number;
-    rigModelVersion?: number | undefined;
-}
-
-export class WebRTCMessage implements IWebRTCMessage {
-    rigOwnerUsername!: string;
-    rigId!: number;
-    componentId!: number;
-    webRTCConnectionType!: WebRTCConnectionType;
-    sessionId!: string;
-    userName!: string;
-    messageType!: string;
-    message!: string;
-
-    constructor(data?: IWebRTCMessage) {
+export class WebRTCMessage {
+    constructor(data) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
+                    this[property] = data[property];
             }
         }
     }
-
-    init(_data?: any) {
+    init(_data) {
         if (_data) {
             this.rigOwnerUsername = _data["rigOwnerUsername"];
             this.rigId = _data["rigId"];
@@ -329,15 +229,13 @@ export class WebRTCMessage implements IWebRTCMessage {
             this.message = _data["message"];
         }
     }
-
-    static fromJS(data: any): WebRTCMessage {
+    static fromJS(data) {
         data = typeof data === 'object' ? data : {};
         let result = new WebRTCMessage();
         result.init(data);
         return result;
     }
-
-    toJSON(data?: any) {
+    toJSON(data) {
         data = typeof data === 'object' ? data : {};
         data["rigOwnerUsername"] = this.rigOwnerUsername;
         data["rigId"] = this.rigId;
@@ -350,41 +248,22 @@ export class WebRTCMessage implements IWebRTCMessage {
         return data;
     }
 }
-
-export interface IWebRTCMessage {
-    rigOwnerUsername: string;
-    rigId: number;
-    componentId: number;
-    webRTCConnectionType: WebRTCConnectionType;
-    sessionId: string;
-    userName: string;
-    messageType: string;
-    message: string;
-}
-
-export enum WebRTCConnectionType {
-    Direct = 0,
-    Relay = 1,
-    File = 2,
-}
-
-export class KeyEventClientModel implements IKeyEventClientModel {
-    componentInputId!: number;
-    type!: string;
-    timeStamp!: number;
-    keyUp!: boolean;
-    keyDown!: boolean;
-
-    constructor(data?: IKeyEventClientModel) {
+export var WebRTCConnectionType;
+(function (WebRTCConnectionType) {
+    WebRTCConnectionType[WebRTCConnectionType["Direct"] = 0] = "Direct";
+    WebRTCConnectionType[WebRTCConnectionType["Relay"] = 1] = "Relay";
+    WebRTCConnectionType[WebRTCConnectionType["File"] = 2] = "File";
+})(WebRTCConnectionType || (WebRTCConnectionType = {}));
+export class KeyEventClientModel {
+    constructor(data) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
+                    this[property] = data[property];
             }
         }
     }
-
-    init(_data?: any) {
+    init(_data) {
         if (_data) {
             this.componentInputId = _data["componentInputId"];
             this.type = _data["type"];
@@ -393,15 +272,13 @@ export class KeyEventClientModel implements IKeyEventClientModel {
             this.keyDown = _data["keyDown"];
         }
     }
-
-    static fromJS(data: any): KeyEventClientModel {
+    static fromJS(data) {
         data = typeof data === 'object' ? data : {};
         let result = new KeyEventClientModel();
         result.init(data);
         return result;
     }
-
-    toJSON(data?: any) {
+    toJSON(data) {
         data = typeof data === 'object' ? data : {};
         data["componentInputId"] = this.componentInputId;
         data["type"] = this.type;
@@ -411,38 +288,21 @@ export class KeyEventClientModel implements IKeyEventClientModel {
         return data;
     }
 }
-
-export interface IKeyEventClientModel {
-    componentInputId: number;
-    type: string;
-    timeStamp: number;
-    keyUp: boolean;
-    keyDown: boolean;
-}
-
-export enum LogSettingType {
-    None = 0,
-    KeyEvents = 8,
-    Commands = 9,
-    BLESensor = 10,
-    Component = 13,
-    SignalR = 14,
-}
-
-export class RigClientViewModel implements IRigClientViewModel {
-    id!: number;
-    name!: string;
-    uniqueCode!: string;
-    videoType!: VideoType;
-    rigModelViewModel!: RigModelViewModel;
-    clientRTCConfigurationViewModel?: ClientRTCConfigurationViewModel | undefined;
-    logSettings!: LogSettingViewModel[];
-
-    constructor(data?: IRigClientViewModel) {
+export var LogSettingType;
+(function (LogSettingType) {
+    LogSettingType[LogSettingType["None"] = 0] = "None";
+    LogSettingType[LogSettingType["KeyEvents"] = 8] = "KeyEvents";
+    LogSettingType[LogSettingType["Commands"] = 9] = "Commands";
+    LogSettingType[LogSettingType["BLESensor"] = 10] = "BLESensor";
+    LogSettingType[LogSettingType["Component"] = 13] = "Component";
+    LogSettingType[LogSettingType["SignalR"] = 14] = "SignalR";
+})(LogSettingType || (LogSettingType = {}));
+export class RigClientViewModel {
+    constructor(data) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
+                    this[property] = data[property];
             }
         }
         if (!data) {
@@ -450,86 +310,61 @@ export class RigClientViewModel implements IRigClientViewModel {
             this.logSettings = [];
         }
     }
-
-    init(_data?: any) {
+    init(_data) {
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
             this.uniqueCode = _data["uniqueCode"];
             this.videoType = _data["videoType"];
             this.rigModelViewModel = _data["rigModelViewModel"] ? RigModelViewModel.fromJS(_data["rigModelViewModel"]) : new RigModelViewModel();
-            this.clientRTCConfigurationViewModel = _data["clientRTCConfigurationViewModel"] ? ClientRTCConfigurationViewModel.fromJS(_data["clientRTCConfigurationViewModel"]) : undefined as any;
+            this.clientRTCConfigurationViewModel = _data["clientRTCConfigurationViewModel"] ? ClientRTCConfigurationViewModel.fromJS(_data["clientRTCConfigurationViewModel"]) : undefined;
             if (Array.isArray(_data["logSettings"])) {
-                this.logSettings = [] as any;
+                this.logSettings = [];
                 for (let item of _data["logSettings"])
-                    this.logSettings!.push(LogSettingViewModel.fromJS(item));
+                    this.logSettings.push(LogSettingViewModel.fromJS(item));
             }
         }
     }
-
-    static fromJS(data: any): RigClientViewModel {
+    static fromJS(data) {
         data = typeof data === 'object' ? data : {};
         let result = new RigClientViewModel();
         result.init(data);
         return result;
     }
-
-    toJSON(data?: any) {
+    toJSON(data) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
         data["uniqueCode"] = this.uniqueCode;
         data["videoType"] = this.videoType;
-        data["rigModelViewModel"] = this.rigModelViewModel ? this.rigModelViewModel.toJSON() : undefined as any;
-        data["clientRTCConfigurationViewModel"] = this.clientRTCConfigurationViewModel ? this.clientRTCConfigurationViewModel.toJSON() : undefined as any;
+        data["rigModelViewModel"] = this.rigModelViewModel ? this.rigModelViewModel.toJSON() : undefined;
+        data["clientRTCConfigurationViewModel"] = this.clientRTCConfigurationViewModel ? this.clientRTCConfigurationViewModel.toJSON() : undefined;
         if (Array.isArray(this.logSettings)) {
             data["logSettings"] = [];
             for (let item of this.logSettings)
-                data["logSettings"].push(item ? item.toJSON() : undefined as any);
+                data["logSettings"].push(item ? item.toJSON() : undefined);
         }
         return data;
     }
 }
-
-export interface IRigClientViewModel {
-    id: number;
-    name: string;
-    uniqueCode: string;
-    videoType: VideoType;
-    rigModelViewModel: RigModelViewModel;
-    clientRTCConfigurationViewModel?: ClientRTCConfigurationViewModel | undefined;
-    logSettings: LogSettingViewModel[];
-}
-
-export enum VideoType {
-    VP8 = 0,
-    H264 = 1,
-}
-
-export class RigModelViewModel implements IRigModelViewModel {
-    id!: number;
-    name!: string;
-    username!: string;
-    canBeDelete!: boolean;
-    canBeEdited!: boolean;
-    version!: number;
-    microControllerId!: number;
-    descriptionHTML!: string;
-    components!: ComponentViewModel[];
-
-    constructor(data?: IRigModelViewModel) {
+export var VideoType;
+(function (VideoType) {
+    VideoType[VideoType["VP8"] = 0] = "VP8";
+    VideoType[VideoType["H264"] = 1] = "H264";
+})(VideoType || (VideoType = {}));
+export class RigModelViewModel {
+    constructor(data) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
+                    this[property] = data[property];
             }
         }
         if (!data) {
             this.components = [];
         }
     }
-
-    init(_data?: any) {
+    init(_data) {
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
@@ -540,21 +375,19 @@ export class RigModelViewModel implements IRigModelViewModel {
             this.microControllerId = _data["microControllerId"];
             this.descriptionHTML = _data["descriptionHTML"];
             if (Array.isArray(_data["components"])) {
-                this.components = [] as any;
+                this.components = [];
                 for (let item of _data["components"])
-                    this.components!.push(ComponentViewModel.fromJS(item));
+                    this.components.push(ComponentViewModel.fromJS(item));
             }
         }
     }
-
-    static fromJS(data: any): RigModelViewModel {
+    static fromJS(data) {
         data = typeof data === 'object' ? data : {};
         let result = new RigModelViewModel();
         result.init(data);
         return result;
     }
-
-    toJSON(data?: any) {
+    toJSON(data) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
@@ -567,52 +400,17 @@ export class RigModelViewModel implements IRigModelViewModel {
         if (Array.isArray(this.components)) {
             data["components"] = [];
             for (let item of this.components)
-                data["components"].push(item ? item.toJSON() : undefined as any);
+                data["components"].push(item ? item.toJSON() : undefined);
         }
         return data;
     }
 }
-
-export interface IRigModelViewModel {
-    id: number;
-    name: string;
-    username: string;
-    canBeDelete: boolean;
-    canBeEdited: boolean;
-    version: number;
-    microControllerId: number;
-    descriptionHTML: string;
-    components: ComponentViewModel[];
-}
-
-export class ComponentViewModel implements IComponentViewModel {
-    id!: number;
-    name!: string;
-    position!: number;
-    componentDefinitionName!: string;
-    componentType!: ComponentType;
-    componentDisplay!: ComponentDisplay;
-    componentDefinitionId!: number;
-    active!: boolean;
-    rigModelIsParent!: boolean;
-    hide!: boolean;
-    tempOpen!: boolean;
-    hideChildren!: boolean;
-    hideProperties!: boolean;
-    hideInputs!: boolean;
-    hidePins!: boolean;
-    children!: ComponentViewModel[];
-    properties!: ComponentPropertyViewModel[];
-    inputs!: ComponentInputViewModel[];
-    pins!: ComponentMicroControllerPinViewModel[];
-    status!: ComponentStatusViewModel[];
-    codeBlocks!: CodeBlockViewModel[];
-
-    constructor(data?: IComponentViewModel) {
+export class ComponentViewModel {
+    constructor(data) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
+                    this[property] = data[property];
             }
         }
         if (!data) {
@@ -624,8 +422,7 @@ export class ComponentViewModel implements IComponentViewModel {
             this.codeBlocks = [];
         }
     }
-
-    init(_data?: any) {
+    init(_data) {
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
@@ -643,46 +440,44 @@ export class ComponentViewModel implements IComponentViewModel {
             this.hideInputs = _data["hideInputs"];
             this.hidePins = _data["hidePins"];
             if (Array.isArray(_data["children"])) {
-                this.children = [] as any;
+                this.children = [];
                 for (let item of _data["children"])
-                    this.children!.push(ComponentViewModel.fromJS(item));
+                    this.children.push(ComponentViewModel.fromJS(item));
             }
             if (Array.isArray(_data["properties"])) {
-                this.properties = [] as any;
+                this.properties = [];
                 for (let item of _data["properties"])
-                    this.properties!.push(ComponentPropertyViewModel.fromJS(item));
+                    this.properties.push(ComponentPropertyViewModel.fromJS(item));
             }
             if (Array.isArray(_data["inputs"])) {
-                this.inputs = [] as any;
+                this.inputs = [];
                 for (let item of _data["inputs"])
-                    this.inputs!.push(ComponentInputViewModel.fromJS(item));
+                    this.inputs.push(ComponentInputViewModel.fromJS(item));
             }
             if (Array.isArray(_data["pins"])) {
-                this.pins = [] as any;
+                this.pins = [];
                 for (let item of _data["pins"])
-                    this.pins!.push(ComponentMicroControllerPinViewModel.fromJS(item));
+                    this.pins.push(ComponentMicroControllerPinViewModel.fromJS(item));
             }
             if (Array.isArray(_data["status"])) {
-                this.status = [] as any;
+                this.status = [];
                 for (let item of _data["status"])
-                    this.status!.push(ComponentStatusViewModel.fromJS(item));
+                    this.status.push(ComponentStatusViewModel.fromJS(item));
             }
             if (Array.isArray(_data["codeBlocks"])) {
-                this.codeBlocks = [] as any;
+                this.codeBlocks = [];
                 for (let item of _data["codeBlocks"])
-                    this.codeBlocks!.push(CodeBlockViewModel.fromJS(item));
+                    this.codeBlocks.push(CodeBlockViewModel.fromJS(item));
             }
         }
     }
-
-    static fromJS(data: any): ComponentViewModel {
+    static fromJS(data) {
         data = typeof data === 'object' ? data : {};
         let result = new ComponentViewModel();
         result.init(data);
         return result;
     }
-
-    toJSON(data?: any) {
+    toJSON(data) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
@@ -702,234 +497,162 @@ export class ComponentViewModel implements IComponentViewModel {
         if (Array.isArray(this.children)) {
             data["children"] = [];
             for (let item of this.children)
-                data["children"].push(item ? item.toJSON() : undefined as any);
+                data["children"].push(item ? item.toJSON() : undefined);
         }
         if (Array.isArray(this.properties)) {
             data["properties"] = [];
             for (let item of this.properties)
-                data["properties"].push(item ? item.toJSON() : undefined as any);
+                data["properties"].push(item ? item.toJSON() : undefined);
         }
         if (Array.isArray(this.inputs)) {
             data["inputs"] = [];
             for (let item of this.inputs)
-                data["inputs"].push(item ? item.toJSON() : undefined as any);
+                data["inputs"].push(item ? item.toJSON() : undefined);
         }
         if (Array.isArray(this.pins)) {
             data["pins"] = [];
             for (let item of this.pins)
-                data["pins"].push(item ? item.toJSON() : undefined as any);
+                data["pins"].push(item ? item.toJSON() : undefined);
         }
         if (Array.isArray(this.status)) {
             data["status"] = [];
             for (let item of this.status)
-                data["status"].push(item ? item.toJSON() : undefined as any);
+                data["status"].push(item ? item.toJSON() : undefined);
         }
         if (Array.isArray(this.codeBlocks)) {
             data["codeBlocks"] = [];
             for (let item of this.codeBlocks)
-                data["codeBlocks"].push(item ? item.toJSON() : undefined as any);
+                data["codeBlocks"].push(item ? item.toJSON() : undefined);
         }
         return data;
     }
 }
-
-
-export enum ComponentType {
-    General = 1,
-    Camera = 2,
-    CameraContainer = 3,
-}
-
-export enum ComponentDisplay {
-    Default = 0,
-    TwoInputsAndOneStatus = 1,
-    Movement = 2,
-    Actuator = 3,
-    Camera = 4,
-}
-
-export class HighScoreModel implements IHighScoreModel {
-    points!: number;
-
-    constructor(data?: IHighScoreModel) {
+export var ComponentType;
+(function (ComponentType) {
+    ComponentType[ComponentType["General"] = 1] = "General";
+    ComponentType[ComponentType["Camera"] = 2] = "Camera";
+    ComponentType[ComponentType["CameraContainer"] = 3] = "CameraContainer";
+})(ComponentType || (ComponentType = {}));
+export var ComponentDisplay;
+(function (ComponentDisplay) {
+    ComponentDisplay[ComponentDisplay["Default"] = 0] = "Default";
+    ComponentDisplay[ComponentDisplay["TwoInputsAndOneStatus"] = 1] = "TwoInputsAndOneStatus";
+    ComponentDisplay[ComponentDisplay["Movement"] = 2] = "Movement";
+    ComponentDisplay[ComponentDisplay["Actuator"] = 3] = "Actuator";
+    ComponentDisplay[ComponentDisplay["Camera"] = 4] = "Camera";
+})(ComponentDisplay || (ComponentDisplay = {}));
+export class HighScoreModel {
+    constructor(data) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
+                    this[property] = data[property];
             }
         }
     }
-
-    init(_data?: any) {
+    init(_data) {
         if (_data) {
             this.points = _data["points"];
         }
     }
-
-    static fromJS(data: any): HighScoreModel {
+    static fromJS(data) {
         data = typeof data === 'object' ? data : {};
         let result = new HighScoreModel();
         result.init(data);
         return result;
     }
-
-    toJSON(data?: any) {
+    toJSON(data) {
         data = typeof data === 'object' ? data : {};
         data["points"] = this.points;
         return data;
     }
 }
-
-export class LogModel implements ILogModel {
-    dateTime!: Date;
-    name!: string;
-    message!: string;
-    storedInFile!: boolean;
-
-    constructor(data?: ILogModel) {
+export class LogModel {
+    constructor(data) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
+                    this[property] = data[property];
             }
         }
     }
-
-    init(_data?: any) {
+    init(_data) {
         if (_data) {
-            this.dateTime = _data["dateTime"] ? new Date(_data["dateTime"].toString()) : undefined as any;
+            this.dateTime = _data["dateTime"] ? new Date(_data["dateTime"].toString()) : undefined;
             this.name = _data["name"];
             this.message = _data["message"];
             this.storedInFile = _data["storedInFile"];
         }
     }
-
-    static fromJS(data: any): LogModel {
+    static fromJS(data) {
         data = typeof data === 'object' ? data : {};
         let result = new LogModel();
         result.init(data);
         return result;
     }
-
-    toJSON(data?: any) {
+    toJSON(data) {
         data = typeof data === 'object' ? data : {};
-        data["dateTime"] = this.dateTime ? this.dateTime.toISOString() : undefined as any;
+        data["dateTime"] = this.dateTime ? this.dateTime.toISOString() : undefined;
         data["name"] = this.name;
         data["message"] = this.message;
         data["storedInFile"] = this.storedInFile;
         return data;
     }
 }
-
-export class CommandMessage implements ICommandMessage {
-    type!: CommandType;
-    value?: any | undefined;
-
-    constructor(data?: ICommandMessage) {
+export class CommandMessage {
+    constructor(data) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
+                    this[property] = data[property];
             }
         }
     }
-
-    init(_data?: any) {
+    init(_data) {
         if (_data) {
             this.type = _data["type"];
             this.value = _data["value"];
         }
     }
-
-    static fromJS(data: any): CommandMessage {
+    static fromJS(data) {
         data = typeof data === 'object' ? data : {};
         let result = new CommandMessage();
         result.init(data);
         return result;
     }
-
-    toJSON(data?: any) {
+    toJSON(data) {
         data = typeof data === 'object' ? data : {};
         data["type"] = this.type;
         data["value"] = this.value;
         return data;
     }
 }
-
-export interface ICommandMessage {
-    type: CommandType;
-    value?: any | undefined;
-}
-
-export enum CommandType {
-    RigReloadRigModel = 1,
-    RigShutdown = 2,
-    RigBecomeOperator = 3,
-    RigStopBeingOperator = 4,
-    RigStartWebRTCConnection = 5,
-    WorldStart = 101,
-    WorldStop = 102,
-    ExploreWorldJoinQueue = 201,
-    ExploreWorldLeaveQueue = 202,
-    ExploreWorldStartSession = 203,
-    ExploreWorldStopSession = 204,
-    VideoSetTime = 301,
-    VideoSetPlayPause = 302,
-}
-
-export interface ILogModel {
-    dateTime: Date;
-    name: string;
-    message: string;
-    storedInFile: boolean;
-}
-
-export interface IHighScoreModel {
-    points: number;
-}
-
-export interface IComponentViewModel {
-    id: number;
-    name: string;
-    position: number;
-    componentDefinitionName: string;
-    componentType: ComponentType;
-    componentDisplay: ComponentDisplay;
-    componentDefinitionId: number;
-    active: boolean;
-    rigModelIsParent: boolean;
-    hide: boolean;
-    tempOpen: boolean;
-    hideChildren: boolean;
-    hideProperties: boolean;
-    hideInputs: boolean;
-    hidePins: boolean;
-    children: ComponentViewModel[];
-    properties: ComponentPropertyViewModel[];
-    inputs: ComponentInputViewModel[];
-    pins: ComponentMicroControllerPinViewModel[];
-    status: ComponentStatusViewModel[];
-    codeBlocks: CodeBlockViewModel[];
-}
-
-export class ComponentPropertyViewModel implements IComponentPropertyViewModel {
-    componentPropertyId?: number | undefined;
-    componentPropertyValue!: string;
-    componentDefinitionPropertyId!: number;
-    componentDefinitionPropertyName!: string;
-    componentDefinitionPropertyDefault!: string;
-    componentDefinitionPropertyType!: ComponentDefinitionPropertyType;
-
-    constructor(data?: IComponentPropertyViewModel) {
+export var CommandType;
+(function (CommandType) {
+    CommandType[CommandType["RigReloadRigModel"] = 1] = "RigReloadRigModel";
+    CommandType[CommandType["RigShutdown"] = 2] = "RigShutdown";
+    CommandType[CommandType["RigBecomeOperator"] = 3] = "RigBecomeOperator";
+    CommandType[CommandType["RigStopBeingOperator"] = 4] = "RigStopBeingOperator";
+    CommandType[CommandType["RigStartWebRTCConnection"] = 5] = "RigStartWebRTCConnection";
+    CommandType[CommandType["WorldStart"] = 101] = "WorldStart";
+    CommandType[CommandType["WorldStop"] = 102] = "WorldStop";
+    CommandType[CommandType["ExploreWorldJoinQueue"] = 201] = "ExploreWorldJoinQueue";
+    CommandType[CommandType["ExploreWorldLeaveQueue"] = 202] = "ExploreWorldLeaveQueue";
+    CommandType[CommandType["ExploreWorldStartSession"] = 203] = "ExploreWorldStartSession";
+    CommandType[CommandType["ExploreWorldStopSession"] = 204] = "ExploreWorldStopSession";
+    CommandType[CommandType["VideoSetTime"] = 301] = "VideoSetTime";
+    CommandType[CommandType["VideoSetPlayPause"] = 302] = "VideoSetPlayPause";
+})(CommandType || (CommandType = {}));
+export class ComponentPropertyViewModel {
+    constructor(data) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
+                    this[property] = data[property];
             }
         }
     }
-
-    init(_data?: any) {
+    init(_data) {
         if (_data) {
             this.componentPropertyId = _data["componentPropertyId"];
             this.componentPropertyValue = _data["componentPropertyValue"];
@@ -939,15 +662,13 @@ export class ComponentPropertyViewModel implements IComponentPropertyViewModel {
             this.componentDefinitionPropertyType = _data["componentDefinitionPropertyType"];
         }
     }
-
-    static fromJS(data: any): ComponentPropertyViewModel {
+    static fromJS(data) {
         data = typeof data === 'object' ? data : {};
         let result = new ComponentPropertyViewModel();
         result.init(data);
         return result;
     }
-
-    toJSON(data?: any) {
+    toJSON(data) {
         data = typeof data === 'object' ? data : {};
         data["componentPropertyId"] = this.componentPropertyId;
         data["componentPropertyValue"] = this.componentPropertyValue;
@@ -958,39 +679,19 @@ export class ComponentPropertyViewModel implements IComponentPropertyViewModel {
         return data;
     }
 }
-
-export interface IComponentPropertyViewModel {
-    componentPropertyId?: number | undefined;
-    componentPropertyValue: string;
-    componentDefinitionPropertyId: number;
-    componentDefinitionPropertyName: string;
-    componentDefinitionPropertyDefault: string;
-    componentDefinitionPropertyType: ComponentDefinitionPropertyType;
-}
-
-
-export enum ComponentDefinitionPropertyType {
-    String = 0,
-    Integer = 1,
-    Float = 2,
-    Boolean = 3,
-}
-
-export class ComponentInputViewModel implements IComponentInputViewModel {
-    position!: number;
-    componentInputId!: number;
-    componentInputName!: string;
-    input!: InputViewModel;
-    componentDefinitionInputId!: number;
-    componentDefinitionInputName!: string;
-    componentDefinitionInputParentName!: string;
-    componentDefinitionInput!: InputViewModel;
-
-    constructor(data?: IComponentInputViewModel) {
+export var ComponentDefinitionPropertyType;
+(function (ComponentDefinitionPropertyType) {
+    ComponentDefinitionPropertyType[ComponentDefinitionPropertyType["String"] = 0] = "String";
+    ComponentDefinitionPropertyType[ComponentDefinitionPropertyType["Integer"] = 1] = "Integer";
+    ComponentDefinitionPropertyType[ComponentDefinitionPropertyType["Float"] = 2] = "Float";
+    ComponentDefinitionPropertyType[ComponentDefinitionPropertyType["Boolean"] = 3] = "Boolean";
+})(ComponentDefinitionPropertyType || (ComponentDefinitionPropertyType = {}));
+export class ComponentInputViewModel {
+    constructor(data) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
+                    this[property] = data[property];
             }
         }
         if (!data) {
@@ -998,8 +699,7 @@ export class ComponentInputViewModel implements IComponentInputViewModel {
             this.componentDefinitionInput = new InputViewModel();
         }
     }
-
-    init(_data?: any) {
+    init(_data) {
         if (_data) {
             this.position = _data["position"];
             this.componentInputId = _data["componentInputId"];
@@ -1011,61 +711,35 @@ export class ComponentInputViewModel implements IComponentInputViewModel {
             this.componentDefinitionInput = _data["componentDefinitionInput"] ? InputViewModel.fromJS(_data["componentDefinitionInput"]) : new InputViewModel();
         }
     }
-
-    static fromJS(data: any): ComponentInputViewModel {
+    static fromJS(data) {
         data = typeof data === 'object' ? data : {};
         let result = new ComponentInputViewModel();
         result.init(data);
         return result;
     }
-
-    toJSON(data?: any) {
+    toJSON(data) {
         data = typeof data === 'object' ? data : {};
         data["position"] = this.position;
         data["componentInputId"] = this.componentInputId;
         data["componentInputName"] = this.componentInputName;
-        data["input"] = this.input ? this.input.toJSON() : undefined as any;
+        data["input"] = this.input ? this.input.toJSON() : undefined;
         data["componentDefinitionInputId"] = this.componentDefinitionInputId;
         data["componentDefinitionInputName"] = this.componentDefinitionInputName;
         data["componentDefinitionInputParentName"] = this.componentDefinitionInputParentName;
-        data["componentDefinitionInput"] = this.componentDefinitionInput ? this.componentDefinitionInput.toJSON() : undefined as any;
+        data["componentDefinitionInput"] = this.componentDefinitionInput ? this.componentDefinitionInput.toJSON() : undefined;
         return data;
     }
 }
-
-export interface IComponentInputViewModel {
-    position: number;
-    componentInputId: number;
-    componentInputName: string;
-    input: InputViewModel;
-    componentDefinitionInputId: number;
-    componentDefinitionInputName: string;
-    componentDefinitionInputParentName: string;
-    componentDefinitionInput: InputViewModel;
-}
-
-export class InputViewModel implements IInputViewModel {
-    id!: number;
-    inputCategoryId!: number;
-    categoryName!: string;
-    name!: string;
-    username!: string;
-    singlePress!: boolean;
-    defaultKey!: string;
-    defaultAltKey?: string | undefined;
-    canBeDelete!: boolean;
-    canBeEdited!: boolean;
-
-    constructor(data?: IInputViewModel) {
+export class InputViewModel {
+    constructor(data) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
+                    this[property] = data[property];
             }
         }
     }
-
-    init(_data?: any) {
+    init(_data) {
         if (_data) {
             this.id = _data["id"];
             this.inputCategoryId = _data["inputCategoryId"];
@@ -1079,15 +753,13 @@ export class InputViewModel implements IInputViewModel {
             this.canBeEdited = _data["canBeEdited"];
         }
     }
-
-    static fromJS(data: any): InputViewModel {
+    static fromJS(data) {
         data = typeof data === 'object' ? data : {};
         let result = new InputViewModel();
         result.init(data);
         return result;
     }
-
-    toJSON(data?: any) {
+    toJSON(data) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["inputCategoryId"] = this.inputCategoryId;
@@ -1102,43 +774,19 @@ export class InputViewModel implements IInputViewModel {
         return data;
     }
 }
-
-export interface IInputViewModel {
-    id: number;
-    inputCategoryId: number;
-    categoryName: string;
-    name: string;
-    username: string;
-    singlePress: boolean;
-    defaultKey: string;
-    defaultAltKey?: string | undefined;
-    canBeDelete: boolean;
-    canBeEdited: boolean;
-}
-
-export class ComponentMicroControllerPinViewModel implements IComponentMicroControllerPinViewModel {
-    componentMicroControllerPinId?: number | undefined;
-    componentMicroControllerPin!: MicroControllerPinViewModel;
-    rigModelId!: number;
-    componentDefinitionMicroControllerPinId!: number;
-    componentDefinitionMicroControllerPinName!: string;
-    pinMode!: PinMode;
-    pinPullUpDown!: PinPullUpDown;
-    codeBlock?: CodeBlockViewModel | undefined;
-
-    constructor(data?: IComponentMicroControllerPinViewModel) {
+export class ComponentMicroControllerPinViewModel {
+    constructor(data) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
+                    this[property] = data[property];
             }
         }
         if (!data) {
             this.componentMicroControllerPin = new MicroControllerPinViewModel();
         }
     }
-
-    init(_data?: any) {
+    init(_data) {
         if (_data) {
             this.componentMicroControllerPinId = _data["componentMicroControllerPinId"];
             this.componentMicroControllerPin = _data["componentMicroControllerPin"] ? MicroControllerPinViewModel.fromJS(_data["componentMicroControllerPin"]) : new MicroControllerPinViewModel();
@@ -1147,62 +795,38 @@ export class ComponentMicroControllerPinViewModel implements IComponentMicroCont
             this.componentDefinitionMicroControllerPinName = _data["componentDefinitionMicroControllerPinName"];
             this.pinMode = _data["pinMode"];
             this.pinPullUpDown = _data["pinPullUpDown"];
-            this.codeBlock = _data["codeBlock"] ? CodeBlockViewModel.fromJS(_data["codeBlock"]) : undefined as any;
+            this.codeBlock = _data["codeBlock"] ? CodeBlockViewModel.fromJS(_data["codeBlock"]) : undefined;
         }
     }
-
-    static fromJS(data: any): ComponentMicroControllerPinViewModel {
+    static fromJS(data) {
         data = typeof data === 'object' ? data : {};
         let result = new ComponentMicroControllerPinViewModel();
         result.init(data);
         return result;
     }
-
-    toJSON(data?: any) {
+    toJSON(data) {
         data = typeof data === 'object' ? data : {};
         data["componentMicroControllerPinId"] = this.componentMicroControllerPinId;
-        data["componentMicroControllerPin"] = this.componentMicroControllerPin ? this.componentMicroControllerPin.toJSON() : undefined as any;
+        data["componentMicroControllerPin"] = this.componentMicroControllerPin ? this.componentMicroControllerPin.toJSON() : undefined;
         data["rigModelId"] = this.rigModelId;
         data["componentDefinitionMicroControllerPinId"] = this.componentDefinitionMicroControllerPinId;
         data["componentDefinitionMicroControllerPinName"] = this.componentDefinitionMicroControllerPinName;
         data["pinMode"] = this.pinMode;
         data["pinPullUpDown"] = this.pinPullUpDown;
-        data["codeBlock"] = this.codeBlock ? this.codeBlock.toJSON() : undefined as any;
+        data["codeBlock"] = this.codeBlock ? this.codeBlock.toJSON() : undefined;
         return data;
     }
 }
-
-export interface IComponentMicroControllerPinViewModel {
-    componentMicroControllerPinId?: number | undefined;
-    componentMicroControllerPin: MicroControllerPinViewModel;
-    rigModelId: number;
-    componentDefinitionMicroControllerPinId: number;
-    componentDefinitionMicroControllerPinName: string;
-    pinMode: PinMode;
-    pinPullUpDown: PinPullUpDown;
-    codeBlock?: CodeBlockViewModel | undefined;
-}
-
-export class MicroControllerPinViewModel implements IMicroControllerPinViewModel {
-    id!: number;
-    microControllerId!: number;
-    name!: string;
-    count!: number;
-    gpio?: number | undefined;
-    microControllerPinType!: MicroControllerPinType;
-    pwm!: boolean;
-    initialState!: MicroControllerPinInitialState;
-
-    constructor(data?: IMicroControllerPinViewModel) {
+export class MicroControllerPinViewModel {
+    constructor(data) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
+                    this[property] = data[property];
             }
         }
     }
-
-    init(_data?: any) {
+    init(_data) {
         if (_data) {
             this.id = _data["id"];
             this.microControllerId = _data["microControllerId"];
@@ -1214,15 +838,13 @@ export class MicroControllerPinViewModel implements IMicroControllerPinViewModel
             this.initialState = _data["initialState"];
         }
     }
-
-    static fromJS(data: any): MicroControllerPinViewModel {
+    static fromJS(data) {
         data = typeof data === 'object' ? data : {};
         let result = new MicroControllerPinViewModel();
         result.init(data);
         return result;
     }
-
-    toJSON(data?: any) {
+    toJSON(data) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["microControllerId"] = this.microControllerId;
@@ -1235,75 +857,55 @@ export class MicroControllerPinViewModel implements IMicroControllerPinViewModel
         return data;
     }
 }
-
-export interface IMicroControllerPinViewModel {
-    id: number;
-    microControllerId: number;
-    name: string;
-    count: number;
-    gpio?: number | undefined;
-    microControllerPinType: MicroControllerPinType;
-    pwm: boolean;
-    initialState: MicroControllerPinInitialState;
-}
-
-export enum MicroControllerPinType {
-    V33 = 1,
-    V5 = 2,
-    Ground = 3,
-    UART = 4,
-    I2C = 5,
-    SPI = 6,
-    GPIO = 7,
-}
-
-export enum MicroControllerPinInitialState {
-    V0 = 0,
-    V33 = 1,
-}
-
-export enum PinPullUpDown {
-    PUD_OFF = 0,
-    PUD_DOWN = 1,
-    PUD_UP = 2,
-}
-
-
-export enum PinMode {
-    INPUT = 1,
-    OUTPUT = 2,
-}
-
-export class LogSettingViewModel implements ILogSettingViewModel {
-    id!: number;
-    logSettingType!: LogSettingType;
-    parameter1?: number | undefined;
-
-    constructor(data?: ILogSettingViewModel) {
+export var MicroControllerPinType;
+(function (MicroControllerPinType) {
+    MicroControllerPinType[MicroControllerPinType["V33"] = 1] = "V33";
+    MicroControllerPinType[MicroControllerPinType["V5"] = 2] = "V5";
+    MicroControllerPinType[MicroControllerPinType["Ground"] = 3] = "Ground";
+    MicroControllerPinType[MicroControllerPinType["UART"] = 4] = "UART";
+    MicroControllerPinType[MicroControllerPinType["I2C"] = 5] = "I2C";
+    MicroControllerPinType[MicroControllerPinType["SPI"] = 6] = "SPI";
+    MicroControllerPinType[MicroControllerPinType["GPIO"] = 7] = "GPIO";
+})(MicroControllerPinType || (MicroControllerPinType = {}));
+export var MicroControllerPinInitialState;
+(function (MicroControllerPinInitialState) {
+    MicroControllerPinInitialState[MicroControllerPinInitialState["V0"] = 0] = "V0";
+    MicroControllerPinInitialState[MicroControllerPinInitialState["V33"] = 1] = "V33";
+})(MicroControllerPinInitialState || (MicroControllerPinInitialState = {}));
+export var PinPullUpDown;
+(function (PinPullUpDown) {
+    PinPullUpDown[PinPullUpDown["PUD_OFF"] = 0] = "PUD_OFF";
+    PinPullUpDown[PinPullUpDown["PUD_DOWN"] = 1] = "PUD_DOWN";
+    PinPullUpDown[PinPullUpDown["PUD_UP"] = 2] = "PUD_UP";
+})(PinPullUpDown || (PinPullUpDown = {}));
+export var PinMode;
+(function (PinMode) {
+    PinMode[PinMode["INPUT"] = 1] = "INPUT";
+    PinMode[PinMode["OUTPUT"] = 2] = "OUTPUT";
+})(PinMode || (PinMode = {}));
+export class LogSettingViewModel {
+    constructor(data) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
+                    this[property] = data[property];
             }
         }
     }
-
-    init(_data?: any) {
+    init(_data) {
         if (_data) {
             this.id = _data["id"];
             this.logSettingType = _data["logSettingType"];
             this.parameter1 = _data["parameter1"];
         }
     }
-
-    static fromJS(data: any): LogSettingViewModel {
+    static fromJS(data) {
         data = typeof data === 'object' ? data : {};
         let result = new LogSettingViewModel();
         result.init(data);
         return result;
     }
-
-    toJSON(data?: any) {
+    toJSON(data) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["logSettingType"] = this.logSettingType;
@@ -1311,32 +913,16 @@ export class LogSettingViewModel implements ILogSettingViewModel {
         return data;
     }
 }
-
-export interface ILogSettingViewModel {
-    id: number;
-    logSettingType: LogSettingType;
-    parameter1?: number | undefined;
-}
-
-export class KeyEventModel implements IKeyEventModel {
-    rigId!: number;
-    componentInputId!: number;
-    worldId!: number;
-    type!: string;
-    timeStamp!: number;
-    repeat!: boolean;
-    shiftKey!: boolean;
-
-    constructor(data?: IKeyEventModel) {
+export class KeyEventModel {
+    constructor(data) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
+                    this[property] = data[property];
             }
         }
     }
-
-    init(_data?: any) {
+    init(_data) {
         if (_data) {
             this.rigId = _data["rigId"];
             this.componentInputId = _data["componentInputId"];
@@ -1347,15 +933,13 @@ export class KeyEventModel implements IKeyEventModel {
             this.shiftKey = _data["shiftKey"];
         }
     }
-
-    static fromJS(data: any): KeyEventModel {
+    static fromJS(data) {
         data = typeof data === 'object' ? data : {};
         let result = new KeyEventModel();
         result.init(data);
         return result;
     }
-
-    toJSON(data?: any) {
+    toJSON(data) {
         data = typeof data === 'object' ? data : {};
         data["rigId"] = this.rigId;
         data["componentInputId"] = this.componentInputId;
@@ -1367,58 +951,38 @@ export class KeyEventModel implements IKeyEventModel {
         return data;
     }
 }
-
-export interface IKeyEventModel {
-    rigId: number;
-    componentInputId: number;
-    worldId: number;
-    type: string;
-    timeStamp: number;
-    repeat: boolean;
-    shiftKey: boolean;
-}
-
-export class CodeBlockViewModel implements ICodeBlockViewModel {
-    id!: number;
-    name!: string;
-    code!: string;
-    type!: CodeBlockType;
-    parameters!: CodeBlockParameterViewModel[];
-
-    constructor(data?: ICodeBlockViewModel) {
+export class CodeBlockViewModel {
+    constructor(data) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
+                    this[property] = data[property];
             }
         }
         if (!data) {
             this.parameters = [];
         }
     }
-
-    init(_data?: any) {
+    init(_data) {
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
             this.code = _data["code"];
             this.type = _data["type"];
             if (Array.isArray(_data["parameters"])) {
-                this.parameters = [] as any;
+                this.parameters = [];
                 for (let item of _data["parameters"])
-                    this.parameters!.push(CodeBlockParameterViewModel.fromJS(item));
+                    this.parameters.push(CodeBlockParameterViewModel.fromJS(item));
             }
         }
     }
-
-    static fromJS(data: any): CodeBlockViewModel {
+    static fromJS(data) {
         data = typeof data === 'object' ? data : {};
         let result = new CodeBlockViewModel();
         result.init(data);
         return result;
     }
-
-    toJSON(data?: any) {
+    toJSON(data) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
@@ -1427,60 +991,44 @@ export class CodeBlockViewModel implements ICodeBlockViewModel {
         if (Array.isArray(this.parameters)) {
             data["parameters"] = [];
             for (let item of this.parameters)
-                data["parameters"].push(item ? item.toJSON() : undefined as any);
+                data["parameters"].push(item ? item.toJSON() : undefined);
         }
         return data;
     }
 }
-
-export interface ICodeBlockViewModel {
-    id: number;
-    name: string;
-    code: string;
-    type: CodeBlockType;
-    parameters: CodeBlockParameterViewModel[];
-}
-
-export enum CodeBlockType {
-    OnAlert = 1,
-    Init = 3,
-    ProcessKeyEvent = 5,
-    Function = 6,
-    Shutdown = 10,
-    ComponentViewHTML = 20,
-    ComponentViewFunction = 21,
-}
-
-export class CodeBlockParameterViewModel implements ICodeBlockParameterViewModel {
-    id!: number;
-    name!: string;
-    type!: CodeBlockParameterType;
-
-    constructor(data?: ICodeBlockParameterViewModel) {
+export var CodeBlockType;
+(function (CodeBlockType) {
+    CodeBlockType[CodeBlockType["OnAlert"] = 1] = "OnAlert";
+    CodeBlockType[CodeBlockType["Init"] = 3] = "Init";
+    CodeBlockType[CodeBlockType["ProcessKeyEvent"] = 5] = "ProcessKeyEvent";
+    CodeBlockType[CodeBlockType["Function"] = 6] = "Function";
+    CodeBlockType[CodeBlockType["Shutdown"] = 10] = "Shutdown";
+    CodeBlockType[CodeBlockType["ComponentViewHTML"] = 20] = "ComponentViewHTML";
+    CodeBlockType[CodeBlockType["ComponentViewFunction"] = 21] = "ComponentViewFunction";
+})(CodeBlockType || (CodeBlockType = {}));
+export class CodeBlockParameterViewModel {
+    constructor(data) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
+                    this[property] = data[property];
             }
         }
     }
-
-    init(_data?: any) {
+    init(_data) {
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
             this.type = _data["type"];
         }
     }
-
-    static fromJS(data: any): CodeBlockParameterViewModel {
+    static fromJS(data) {
         data = typeof data === 'object' ? data : {};
         let result = new CodeBlockParameterViewModel();
         result.init(data);
         return result;
     }
-
-    toJSON(data?: any) {
+    toJSON(data) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
@@ -1488,15 +1036,10 @@ export class CodeBlockParameterViewModel implements ICodeBlockParameterViewModel
         return data;
     }
 }
-
-export interface ICodeBlockParameterViewModel {
-    id: number;
-    name: string;
-    type: CodeBlockParameterType;
-}
-
-export enum CodeBlockParameterType {
-    Number = 1,
-    String = 2,
-    Boolean = 3,
-}
+export var CodeBlockParameterType;
+(function (CodeBlockParameterType) {
+    CodeBlockParameterType[CodeBlockParameterType["Number"] = 1] = "Number";
+    CodeBlockParameterType[CodeBlockParameterType["String"] = 2] = "String";
+    CodeBlockParameterType[CodeBlockParameterType["Boolean"] = 3] = "Boolean";
+})(CodeBlockParameterType || (CodeBlockParameterType = {}));
+//# sourceMappingURL=models.js.map

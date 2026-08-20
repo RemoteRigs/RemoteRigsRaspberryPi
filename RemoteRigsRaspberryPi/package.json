@@ -9,7 +9,8 @@
   "dependencies": {
     "@microsoft/signalr": "^8.0.7",
     "axios": "^1.13.2",
-    "pigpio": "^3.3.1"
+    "pigpio": "^3.3.1",
+    "webrtc-streamer": "^0.8.14-6-g6774b68"
   },
   "devDependencies": {
     "@types/node": "^22.15.3"
