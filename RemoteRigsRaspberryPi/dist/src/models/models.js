@@ -224,7 +224,7 @@ export class WebRTCMessage {
             this.componentId = _data["componentId"];
             this.webRTCConnectionType = _data["webRTCConnectionType"];
             this.sessionId = _data["sessionId"];
-            this.username = _data["username"];
+            this.userName = _data["userName"];
             this.messageType = _data["messageType"];
             this.message = _data["message"];
         }
@@ -242,7 +242,7 @@ export class WebRTCMessage {
         data["componentId"] = this.componentId;
         data["webRTCConnectionType"] = this.webRTCConnectionType;
         data["sessionId"] = this.sessionId;
-        data["username"] = this.username;
+        data["userName"] = this.userName;
         data["messageType"] = this.messageType;
         data["message"] = this.message;
         return data;

@@ -47,7 +47,7 @@ export default class WebRTCStreamerWrapper {
     }
     async PutWebRTCMessage(message) {
         if (this.streamerStarted) {
-            this.Log("PutWebRTCMessage username: " + message.username + " messageType: " + message.messageType);
+            this.Log("PutWebRTCMessage userName: " + message.userName + " messageType: " + message.messageType);
             if (message.messageType == "getIceServers") {
                 await this.GetIceServers(message);
             }
@@ -88,7 +88,7 @@ export default class WebRTCStreamerWrapper {
             }
         }
         else {
-            this.Log("IGNORED! PutWebRTCMessage username: " + message.username + " messageType: " + message.messageType);
+            this.Log("IGNORED! PutWebRTCMessage userName: " + message.userName + " messageType: " + message.messageType);
         }
     }
     async StartWebRTCStreamer() {
@@ -189,7 +189,7 @@ export default class WebRTCStreamerWrapper {
             webrtcMessage.rigId = message.rigId;
             webrtcMessage.webRTCConnectionType = message.webRTCConnectionType;
             webrtcMessage.sessionId = message.sessionId;
-            webrtcMessage.username = message.username;
+            webrtcMessage.userName = message.userName;
             webrtcMessage.rigOwnerUsername = message.rigOwnerUsername;
             webrtcMessage.messageType = 'getIceServersResponse';
             webrtcMessage.message = JSON.stringify(response.data);
@@ -249,13 +249,13 @@ export default class WebRTCStreamerWrapper {
                 webrtcMessage.rigId = message.rigId;
                 webrtcMessage.sessionId = message.sessionId;
                 webrtcMessage.webRTCConnectionType = message.webRTCConnectionType;
-                webrtcMessage.username = message.username;
+                webrtcMessage.userName = message.userName;
                 webrtcMessage.rigOwnerUsername = message.rigOwnerUsername;
                 webrtcMessage.messageType = 'onReceiveCall';
                 webrtcMessage.message = JSON.stringify(response.data);
                 SignalR.SendWebRTCMessage(webrtcMessage);
                 // Start polling voor ICE candidates van de server
-                this.StartIceCandidatePolling(message.sessionId, message.rigId, message.username, message.rigOwnerUsername, message.webRTCConnectionType);
+                this.StartIceCandidatePolling(message.sessionId, message.rigId, message.userName, message.rigOwnerUsername, message.webRTCConnectionType);
             }
             else {
                 this.Error("devicePath is empty");
@@ -324,7 +324,7 @@ export default class WebRTCStreamerWrapper {
                 webrtcMessage.rigId = message.rigId;
                 webrtcMessage.webRTCConnectionType = message.webRTCConnectionType;
                 webrtcMessage.sessionId = message.sessionId;
-                webrtcMessage.username = message.username;
+                webrtcMessage.userName = message.userName;
                 webrtcMessage.rigOwnerUsername = message.rigOwnerUsername;
                 webrtcMessage.messageType = 'receiveOffer';
                 //webrtcMessage.message = JSON.stringify(response.data);
@@ -355,7 +355,7 @@ export default class WebRTCStreamerWrapper {
             const response = await this.streamerClient.post(setAnswerUrl, tJSON);
             this.Log("SetAnswer Response status: " + response.status);
             this.Log("SetAnswer Response data:\\r\\n" + JSON.stringify(response.data?.sdp));
-            this.StartIceCandidatePolling(message.sessionId, message.rigId, message.username, message.rigOwnerUsername, message.webRTCConnectionType);
+            this.StartIceCandidatePolling(message.sessionId, message.rigId, message.userName, message.rigOwnerUsername, message.webRTCConnectionType);
         }
         catch (err) {
             if (err.response) {
@@ -365,7 +365,7 @@ export default class WebRTCStreamerWrapper {
             this.Error("SetAnswer Call error: " + err.message);
         }
     }
-    StartIceCandidatePolling(peerId, rigId, username, rigOwnerUsername, webRTCConnectionType) {
+    StartIceCandidatePolling(peerId, rigId, userName, rigOwnerUsername, webRTCConnectionType) {
         // Stop eventuele bestaande polling voor deze peer
         this.StopIceCandidatePolling(peerId);
         // Initialiseer candidate tracking voor deze peer
@@ -401,7 +401,7 @@ export default class WebRTCStreamerWrapper {
                             webrtcMessage.rigId = rigId;
                             webrtcMessage.sessionId = peerId;
                             webrtcMessage.webRTCConnectionType = webRTCConnectionType;
-                            webrtcMessage.username = username;
+                            webrtcMessage.userName = userName;
                             webrtcMessage.rigOwnerUsername = rigOwnerUsername;
                             webrtcMessage.messageType = 'onReceiveCandidate';
                             webrtcMessage.message = JSON.stringify(candidate);
