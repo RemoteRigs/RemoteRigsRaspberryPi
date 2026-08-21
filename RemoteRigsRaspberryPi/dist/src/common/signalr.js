@@ -1,8 +1,8 @@
-import { exec } from "child_process";
 import * as signalR from '@microsoft/signalr';
 import Server from './../server.js';
 import Debug from './debug.js';
 import Rig from '../rig.js';
+import { exec } from "child_process";
 import { LogSettingType, CommandType, StatusType } from '../models/models.js';
 export default class SignalR {
     static { this.hubConnection = null; }
@@ -47,7 +47,7 @@ export default class SignalR {
                     SignalR.SignIn(uniquecode);
                     break;
                 case CommandType.RigShutdown:
-                    Debug.LogAlways("Raspberry Pi", "SHUTTING DOWN!", true);
+                    Debug.LogAlways("Raspberry Pi", "SHUTTING DOWN! (received command)", true);
                     exec("shutdown now");
                     break;
             }
@@ -115,17 +115,16 @@ export default class SignalR {
             SignalR.hubConnection.invoke('SignIn', uniquecode)
                 .then((rigClientViewModel) => {
                 if (rigClientViewModel.rigModelViewModel == undefined) {
-                    Debug.LogAlways(SignalR.GetName(), "SignIn failed!! GUID: " + uniquecode, true);
+                    Debug.LogAlways(SignalR.GetName(), "sign in to server failed! GUID: " + uniquecode, true);
                 }
                 else {
-                    Debug.LogAlways(SignalR.GetName(), "SignIn successful", true);
+                    Debug.LogAlways(SignalR.GetName(), "sign in to server successful", true);
+                    Debug.LogAlways(SignalR.GetName(), "rig #" + rigClientViewModel.id + " '" + rigClientViewModel.name + "'", true);
+                    Debug.LogAlways(SignalR.GetName(), "rig model #" + rigClientViewModel.rigModelViewModel.id + " '" + rigClientViewModel.rigModelViewModel.name + "'", true);
                     Server.rig = new Rig(rigClientViewModel);
                     Server.rig.CreateComponents();
-                    Debug.LogAlways(SignalR.GetName(), "Rig components loaded", true);
                     Server.rig.Init();
-                    Debug.LogAlways(SignalR.GetName(), "Rig 'Init' functions executed", true);
                     Server.rig.SendCurrent();
-                    Debug.LogAlways(SignalR.GetName(), "Rig current status send", true);
                 }
             })
                 .catch((err) => {
@@ -133,7 +132,7 @@ export default class SignalR {
             });
         }
         else {
-            Debug.Error(SignalR.GetName(), "outgoing SignIn: no hub connection");
+            Debug.Error(SignalR.GetName(), "sign in canceled: no hub connection");
         }
     }
     static UpdateStatus(pStatusModel) {

@@ -24,11 +24,11 @@ export default class Rig {
             Debug.LogAlways("#" + this.rig.logSettings[i].id + " log setting", text, true);
         }
 
-        Debug.LogAlways(this.GetName(), "Rig instance '" + this.rig.name + "' created", true);
+        Debug.LogAlways(this.GetName(), "rig instance created & log settings loaded", true);
     }
 
     public CreateComponents(): void {
-        Debug.LogAlways(this.GetName(), "CreateComponents this.rig.rigModelViewModel.components.length: " + this.rig.rigModelViewModel.components.length, true);
+        Debug.LogAlways(this.GetName(), "creating components for rig (" + this.rig.rigModelViewModel.components.length + " component(s))", true);
 
         for (var i = 0; i < this.rig.rigModelViewModel.components.length; i++) {
             try {
@@ -38,12 +38,16 @@ export default class Rig {
                 Debug.Error(this.GetName(), "FAILED TO CREATE CHILD COMPONENT: " + ex);
             }
         }
+
+        Debug.LogAlways(this.GetName(), "rig components created", true);
     }
 
     public Init(): void {
         for (var i = 0; i < this.components.length; i++) {
             this.components[i].Init();
         }
+
+        Debug.LogAlways(this.GetName(), "rig 'init' functions executed", true);
     }
 
     public Shutdown(): void {
@@ -68,6 +72,8 @@ export default class Rig {
         for (var i = 0; i < this.components.length; i++) {
             this.components[i].SendCurrent();
         }
+
+        Debug.LogAlways(this.GetName(), "rig current status send to server", true);
     }
 
     public ProcessKeyEvent(event: KeyEventClientModel): void {
@@ -83,6 +89,6 @@ export default class Rig {
     }
 
     private GetName(): string {
-        return "rig #" + this.rig.id;
+        return "#" + this.rig.id + " " + this.rig.name;
     }
 }

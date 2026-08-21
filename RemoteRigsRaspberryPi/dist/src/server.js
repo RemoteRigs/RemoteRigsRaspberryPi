@@ -21,57 +21,38 @@ export default class Server {
     Start(configPath) {
         //this.InitHandlers();
         if (configPath == undefined || configPath == "" || config == null) {
-            Debug.Error(this.GetName(), "Config file path is missing");
+            Debug.Error(this.GetName(), "config file path is missing");
             return;
         }
         fs.readFile(configPath, 'utf8', (error, data) => {
             if (error != undefined) {
-                Debug.Error(this.GetName(), 'Error reading config: ' + error);
+                Debug.Error(this.GetName(), 'error reading config: ' + error);
                 return;
             }
             try {
                 this.Load(JSON.parse(data));
             }
             catch (parseError) {
-                Debug.Error(this.GetName(), 'Error parsing config: ' + parseError);
+                Debug.Error(this.GetName(), 'error parsing config: ' + parseError);
             }
             this.SetupVariables();
             SignalR.StartConnection(Server.rig_uniquecode);
         });
     }
-    //private InitHandlers(): void {
-    //    process.on('exit', this.OnExit);
-    //    process.on('SIGINT', this.OnSigInt);
-    //    process.on('SIGTERM', this.OnSigTerm);
-    //}
-    //private OnExit(code: any) {
-    //    Debug.LogAlways(this.GetName(), `exit-code: ${code}`);
-    //    this.Shutdown();
-    //}
-    //private OnSigInt() {
-    //    Debug.LogAlways(this.GetName(), "SIGINT received (ctrl + c)");
-    //    this.Shutdown();
-    //    process.exit();
-    //}
-    //private OnSigTerm() {
-    //    Debug.LogAlways(this.GetName(), "SIGTERM received");
-    //    this.Shutdown();
-    //    process.exit();
-    //}
     Load(config) {
         // Server
         if (config.server.url != undefined) {
             Server.serverurl = config.server.url;
         }
         else {
-            Debug.Error(this.GetName(), "Server IP address is not defined in config.json");
+            Debug.Error(this.GetName(), "server ip address is not defined in config.json");
         }
         // rig
         if (config.rig?.uniquecode != undefined) {
             Server.rig_uniquecode = config.rig.uniquecode;
         }
         else {
-            Debug.Error(this.GetName(), "Rig unique code is not defined in config.json");
+            Debug.Error(this.GetName(), "rig unique code is not defined in config.json");
         }
     }
     Shutdown() {

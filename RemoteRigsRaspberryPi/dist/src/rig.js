@@ -13,10 +13,10 @@ export default class Rig {
             }
             Debug.LogAlways("#" + this.rig.logSettings[i].id + " log setting", text, true);
         }
-        Debug.LogAlways(this.GetName(), "Rig instance '" + this.rig.name + "' created", true);
+        Debug.LogAlways(this.GetName(), "rig instance created & log settings loaded", true);
     }
     CreateComponents() {
-        Debug.LogAlways(this.GetName(), "CreateComponents this.rig.rigModelViewModel.components.length: " + this.rig.rigModelViewModel.components.length, true);
+        Debug.LogAlways(this.GetName(), "creating components for rig (" + this.rig.rigModelViewModel.components.length + " component(s))", true);
         for (var i = 0; i < this.rig.rigModelViewModel.components.length; i++) {
             try {
                 this.components.push(new Component(this, this.rig.rigModelViewModel.components[i], this.rig.clientRTCConfigurationViewModel, null));
@@ -25,11 +25,13 @@ export default class Rig {
                 Debug.Error(this.GetName(), "FAILED TO CREATE CHILD COMPONENT: " + ex);
             }
         }
+        Debug.LogAlways(this.GetName(), "rig components created", true);
     }
     Init() {
         for (var i = 0; i < this.components.length; i++) {
             this.components[i].Init();
         }
+        Debug.LogAlways(this.GetName(), "rig 'init' functions executed", true);
     }
     Shutdown() {
         for (var i = 0; i < this.components.length; i++) {
@@ -47,6 +49,7 @@ export default class Rig {
         for (var i = 0; i < this.components.length; i++) {
             this.components[i].SendCurrent();
         }
+        Debug.LogAlways(this.GetName(), "rig current status send to server", true);
     }
     ProcessKeyEvent(event) {
         for (var i = 0; i < this.components.length; i++) {
