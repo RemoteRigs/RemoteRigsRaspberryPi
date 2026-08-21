@@ -62,7 +62,7 @@ export default class Rig {
         }
     }
     GetName() {
-        return "rig #" + this.rig.id;
+        return "#" + this.rig.id + " " + this.rig.name;
     }
 }
 //# sourceMappingURL=rig.js.map
