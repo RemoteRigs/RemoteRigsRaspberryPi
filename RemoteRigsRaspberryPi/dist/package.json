@@ -1,7 +1,7 @@
 {
   "name": "remoterigs-raspberrypi",
   "type": "module",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "main": "./index.js",
   "files": [
     "index.js",
@@ -15,7 +15,6 @@
   "dependencies": {
     "@microsoft/signalr": "^8.0.7",
     "axios": "^1.13.2",
-    "pigpio": "^3.3.1",
-    "webrtc-streamer": "^0.8.14-6-g6774b68"
+    "pigpio": "^3.3.1"
   }
 }
