@@ -4,6 +4,7 @@ import fs from 'fs';
 import Rig from './rig.js';
 import Debug from './common/debug.js';
 import SignalR from './common/signalr.js';
+import { config } from 'process';
 
 export default class Server {
 
@@ -32,10 +33,15 @@ export default class Server {
         });
     }
 
-    public Start(): void {
+    public Start(configPath: string): void {
         //this.InitHandlers();
 
-        fs.readFile("config.json", 'utf8', (error: any, data: any) => {
+        if (configPath == undefined || configPath == "" || config == null) {
+            Debug.Error(this.GetName(), "Config file path is missing");
+            return;
+        }
+
+        fs.readFile(configPath, 'utf8', (error: any, data: any) => {
             if (error != undefined) {
                 Debug.Error(this.GetName(), 'Error reading config: ' + error);
                 return;

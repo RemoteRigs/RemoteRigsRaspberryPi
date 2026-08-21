@@ -2,6 +2,7 @@
 import fs from 'fs';
 import Debug from './common/debug.js';
 import SignalR from './common/signalr.js';
+import { config } from 'process';
 export default class Server {
     static { this.signalr = ""; }
     static { this.rig = null; }
@@ -17,9 +18,13 @@ export default class Server {
             }
         });
     }
-    Start() {
+    Start(configPath) {
         //this.InitHandlers();
-        fs.readFile("config.json", 'utf8', (error, data) => {
+        if (configPath == undefined || configPath == "" || config == null) {
+            Debug.Error(this.GetName(), "Config file path is missing");
+            return;
+        }
+        fs.readFile(configPath, 'utf8', (error, data) => {
             if (error != undefined) {
                 Debug.Error(this.GetName(), 'Error reading config: ' + error);
                 return;
