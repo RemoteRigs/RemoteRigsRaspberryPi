@@ -62,6 +62,7 @@ export default class Server {
             SignalR.StopConnection();
             Server.rig = null;
         }
+        process.exit(0);
     }
     SetupVariables() {
         Server.signalr = Server.serverurl + "/righub";

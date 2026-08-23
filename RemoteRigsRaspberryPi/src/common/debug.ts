@@ -32,7 +32,7 @@ export default class Debug {
 
     public static LogAlways(name: string, message: string, signalr: boolean): void {
         var date = new Date();
-       
+
         if (signalr) {
             var logModel = new LogModel();
 
@@ -61,14 +61,12 @@ export default class Debug {
     }
 
     public static SendLogModel(logModel: LogModel): void {
-        if (Server.rig != null) {
-            var tStatusModel = new StatusModel();
+        var tStatusModel = new StatusModel();
 
-            tStatusModel.type = StatusType.RigLog;
-            tStatusModel.value = logModel;
+        tStatusModel.type = StatusType.RigLog;
+        tStatusModel.value = logModel;
 
-            SignalR.UpdateStatus(tStatusModel);
-        }
+        SignalR.UpdateStatus(tStatusModel);
     }
 
     public static GetLogSetting(pLogSettingType: LogSettingType, id?: number): boolean {

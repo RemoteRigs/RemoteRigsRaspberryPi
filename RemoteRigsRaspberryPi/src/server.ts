@@ -88,6 +88,8 @@ export default class Server {
 
             Server.rig = null;
         }
+
+        process.exit(0);
     }
 
     private SetupVariables(): void {

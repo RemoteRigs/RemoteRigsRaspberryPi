@@ -40,12 +40,10 @@ export default class Debug {
         Debug.error_callback();
     }
     static SendLogModel(logModel) {
-        if (Server.rig != null) {
-            var tStatusModel = new StatusModel();
-            tStatusModel.type = StatusType.RigLog;
-            tStatusModel.value = logModel;
-            SignalR.UpdateStatus(tStatusModel);
-        }
+        var tStatusModel = new StatusModel();
+        tStatusModel.type = StatusType.RigLog;
+        tStatusModel.value = logModel;
+        SignalR.UpdateStatus(tStatusModel);
     }
     static GetLogSetting(pLogSettingType, id) {
         if (Server.rig != null) {
