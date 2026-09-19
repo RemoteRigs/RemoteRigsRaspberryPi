@@ -70,7 +70,7 @@ export default class SignalR {
             SignalR.SignIn(uniquecode);
         })
             .catch((err) => {
-            Debug.Error(SignalR.GetName(), err);
+            Debug.LogAlways(SignalR.GetName(), "failed to establish hub connection: " + err, false);
             SignalR.ScheduleReconnect();
         });
     }
