@@ -124,10 +124,10 @@ export default class SignalR {
         if (SignalR.hubConnection) {
             SignalR.hubConnection.stop()
                 .then(() => {
-                    Debug.Log(LogSettingType.SignalR, undefined, SignalR.GetName(), 'hub connection stopped');
+                    Debug.LogAlways(SignalR.GetName(), 'hub connection stopped', false);
                 })
                 .catch((err) => {
-                    Debug.Error(SignalR.GetName(), err);
+                    Debug.LogAlways(SignalR.GetName(), "StopConnection err: '" + err + "'", false);
                 });
         }
     }
@@ -160,7 +160,7 @@ export default class SignalR {
                 });
         }
         else {
-            Debug.Error(SignalR.GetName(), "sign in canceled: no hub connection");
+            Debug.LogAlways(SignalR.GetName(), "sign in canceled: no hub connection", false);
         }
     }
 
@@ -181,7 +181,7 @@ export default class SignalR {
                 });
         }
         else {
-            Debug.Error(SignalR.GetName(), "outgoing UpdateStatus: no hub connection");
+            Debug.LogAlways(SignalR.GetName(), "outgoing UpdateStatus: no hub connection", false);
         }
     }
 
@@ -198,7 +198,7 @@ export default class SignalR {
                 });
         }
         else {
-            Debug.Error(SignalR.GetName(), "SendWebRTCMessage: no hub connection");
+            Debug.LogAlways(SignalR.GetName(), "SendWebRTCMessage: no hub connection", false);
         }
     }
 
@@ -215,7 +215,7 @@ export default class SignalR {
                 });
         }
         else {
-            Debug.Error(SignalR.GetName(), "outgoing AddHighScorePoints: no hub connection");
+            Debug.LogAlways(SignalR.GetName(), "outgoing AddHighScorePoints: no hub connection", false);
         }
     }
 }
