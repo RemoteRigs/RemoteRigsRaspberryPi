@@ -13,6 +13,19 @@ export default class Status {
             this.SendUpdateStatus(value);
         }
     }
+    /**
+     * Restore the last value stored on the server (only for statuses with 'store' enabled).
+     * Does not send an update; SendCurrent() will report it to the server.
+     */
+    LoadStoredValue(value) {
+        this.last_value = value;
+    }
+    IsStored() {
+        return this.status.store == true;
+    }
+    GetStatusId() {
+        return this.status.id;
+    }
     SendCurrent() {
         if (this.last_value != null) {
             this.SendUpdateStatus(this.last_value);

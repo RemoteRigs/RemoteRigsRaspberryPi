@@ -16,6 +16,7 @@ export class ComponentStatusViewModel implements IComponentStatusViewModel {
     componentId!: number;
     name!: string;
     type!: StatusType;
+    store!: boolean;
     states!: ComponentStatusStateViewModel[];
 
     constructor(data?: IComponentStatusViewModel) {
@@ -36,6 +37,7 @@ export class ComponentStatusViewModel implements IComponentStatusViewModel {
             this.componentId = _data["componentId"];
             this.name = _data["name"];
             this.type = _data["type"];
+            this.store = _data["store"];
             if (Array.isArray(_data["states"])) {
                 this.states = [] as any;
                 for (let item of _data["states"])
@@ -57,6 +59,7 @@ export class ComponentStatusViewModel implements IComponentStatusViewModel {
         data["componentId"] = this.componentId;
         data["name"] = this.name;
         data["type"] = this.type;
+        data["store"] = this.store;
         if (Array.isArray(this.states)) {
             data["states"] = [];
             for (let item of this.states)
@@ -71,6 +74,7 @@ export interface IComponentStatusViewModel {
     componentId: number;
     name: string;
     type: StatusType;
+    store: boolean;
     states: ComponentStatusStateViewModel[];
 }
 
@@ -437,6 +441,7 @@ export class RigClientViewModel implements IRigClientViewModel {
     rigModelViewModel!: RigModelViewModel;
     clientRTCConfigurationViewModel?: ClientRTCConfigurationViewModel | undefined;
     logSettings!: LogSettingViewModel[];
+    componentStatuses!: StatusModel[];
 
     constructor(data?: IRigClientViewModel) {
         if (data) {
@@ -448,6 +453,7 @@ export class RigClientViewModel implements IRigClientViewModel {
         if (!data) {
             this.rigModelViewModel = new RigModelViewModel();
             this.logSettings = [];
+            this.componentStatuses = [];
         }
     }
 
@@ -463,6 +469,11 @@ export class RigClientViewModel implements IRigClientViewModel {
                 this.logSettings = [] as any;
                 for (let item of _data["logSettings"])
                     this.logSettings!.push(LogSettingViewModel.fromJS(item));
+            }
+            if (Array.isArray(_data["componentStatuses"])) {
+                this.componentStatuses = [] as any;
+                for (let item of _data["componentStatuses"])
+                    this.componentStatuses!.push(StatusModel.fromJS(item));
             }
         }
     }
@@ -487,6 +498,11 @@ export class RigClientViewModel implements IRigClientViewModel {
             for (let item of this.logSettings)
                 data["logSettings"].push(item ? item.toJSON() : undefined as any);
         }
+        if (Array.isArray(this.componentStatuses)) {
+            data["componentStatuses"] = [];
+            for (let item of this.componentStatuses)
+                data["componentStatuses"].push(item ? item.toJSON() : undefined as any);
+        }
         return data;
     }
 }
@@ -499,6 +515,7 @@ export interface IRigClientViewModel {
     rigModelViewModel: RigModelViewModel;
     clientRTCConfigurationViewModel?: ClientRTCConfigurationViewModel | undefined;
     logSettings: LogSettingViewModel[];
+    componentStatuses: StatusModel[];
 }
 
 export enum VideoType {

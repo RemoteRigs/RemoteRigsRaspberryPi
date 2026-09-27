@@ -29,6 +29,7 @@ export class ComponentStatusViewModel {
             this.componentId = _data["componentId"];
             this.name = _data["name"];
             this.type = _data["type"];
+            this.store = _data["store"];
             if (Array.isArray(_data["states"])) {
                 this.states = [];
                 for (let item of _data["states"])
@@ -48,6 +49,7 @@ export class ComponentStatusViewModel {
         data["componentId"] = this.componentId;
         data["name"] = this.name;
         data["type"] = this.type;
+        data["store"] = this.store;
         if (Array.isArray(this.states)) {
             data["states"] = [];
             for (let item of this.states)
@@ -308,6 +310,7 @@ export class RigClientViewModel {
         if (!data) {
             this.rigModelViewModel = new RigModelViewModel();
             this.logSettings = [];
+            this.componentStatuses = [];
         }
     }
     init(_data) {
@@ -322,6 +325,11 @@ export class RigClientViewModel {
                 this.logSettings = [];
                 for (let item of _data["logSettings"])
                     this.logSettings.push(LogSettingViewModel.fromJS(item));
+            }
+            if (Array.isArray(_data["componentStatuses"])) {
+                this.componentStatuses = [];
+                for (let item of _data["componentStatuses"])
+                    this.componentStatuses.push(StatusModel.fromJS(item));
             }
         }
     }
@@ -343,6 +351,11 @@ export class RigClientViewModel {
             data["logSettings"] = [];
             for (let item of this.logSettings)
                 data["logSettings"].push(item ? item.toJSON() : undefined);
+        }
+        if (Array.isArray(this.componentStatuses)) {
+            data["componentStatuses"] = [];
+            for (let item of this.componentStatuses)
+                data["componentStatuses"].push(item ? item.toJSON() : undefined);
         }
         return data;
     }

@@ -89,6 +89,8 @@ export default class Component {
             this.Log("status: '" + this.component.status[i].name.toLowerCase() + "'");
         }
 
+        this.LoadStoredStatuses();
+
         for (var i = 0; i < this.component.codeBlocks.length; i++) {
             if (this.component.codeBlocks[i].type == CodeBlockType.Function) {
                 try {
@@ -302,6 +304,37 @@ export default class Component {
         }
     }
 
+    private LoadStoredStatuses(): void {
+        var componentStatuses = this.rig.rig.componentStatuses;
+
+        if (componentStatuses == undefined) {
+            return;
+        }
+
+        for (const key in this.status) {
+            var status = this.status[key];
+
+            if (!status.IsStored()) {
+                continue;
+            }
+
+            for (var i = 0; i < componentStatuses.length; i++) {
+                var stored = componentStatuses[i].value;
+
+                if (stored != undefined &&
+                    stored.componentId == this.component.id &&
+                    stored.statusId == status.GetStatusId() &&
+                    stored.value != undefined && stored.value != null) {
+
+                    status.LoadStoredValue(stored.value);
+
+                    this.Log("stored status loaded: '" + key + "' = " + stored.value + (stored.valueStr ? " (" + stored.valueStr + ")" : ""));
+                    break;
+                }
+            }
+        }
+    }
+
     public SetCallback(callback: CallbackType | null): void {
         this.callback = callback;
     }
@@ -337,7 +370,7 @@ export default class Component {
 
     public GetStatusState(status: string): string {
         if (this.status.hasOwnProperty(status.toLowerCase())) {
-            (this.status[status.toLowerCase()] as StatusState).GetValueStr();
+            return (this.status[status.toLowerCase()] as StatusState).GetValueStr();
         }
 
         return "";
