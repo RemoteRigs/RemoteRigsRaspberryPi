@@ -303,12 +303,12 @@ export interface IRigModelLoadedModel {
 }
 
 export class WebRTCMessage implements IWebRTCMessage {
-    rigOwnerUsername!: string;
+    rigOwnerUserId!: string;
     rigId!: number;
     componentId!: number;
     webRTCConnectionType!: WebRTCConnectionType;
     sessionId!: string;
-    userName!: string;
+    userId!: string;
     messageType!: string;
     message!: string;
 
@@ -323,12 +323,12 @@ export class WebRTCMessage implements IWebRTCMessage {
 
     init(_data?: any) {
         if (_data) {
-            this.rigOwnerUsername = _data["rigOwnerUsername"];
+            this.rigOwnerUserId = _data["rigOwnerUserId"];
             this.rigId = _data["rigId"];
             this.componentId = _data["componentId"];
             this.webRTCConnectionType = _data["webRTCConnectionType"];
             this.sessionId = _data["sessionId"];
-            this.userName = _data["userName"];
+            this.userId = _data["userId"];
             this.messageType = _data["messageType"];
             this.message = _data["message"];
         }
@@ -343,12 +343,12 @@ export class WebRTCMessage implements IWebRTCMessage {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["rigOwnerUsername"] = this.rigOwnerUsername;
+        data["rigOwnerUserId"] = this.rigOwnerUserId;
         data["rigId"] = this.rigId;
         data["componentId"] = this.componentId;
         data["webRTCConnectionType"] = this.webRTCConnectionType;
         data["sessionId"] = this.sessionId;
-        data["userName"] = this.userName;
+        data["userId"] = this.userId;
         data["messageType"] = this.messageType;
         data["message"] = this.message;
         return data;
@@ -356,12 +356,12 @@ export class WebRTCMessage implements IWebRTCMessage {
 }
 
 export interface IWebRTCMessage {
-    rigOwnerUsername: string;
+    rigOwnerUserId: string;
     rigId: number;
     componentId: number;
     webRTCConnectionType: WebRTCConnectionType;
     sessionId: string;
-    userName: string;
+    userId: string;
     messageType: string;
     message: string;
 }

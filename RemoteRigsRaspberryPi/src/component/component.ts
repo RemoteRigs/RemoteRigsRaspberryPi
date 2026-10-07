@@ -261,7 +261,7 @@ export default class Component {
 
     public PutWebRTCMessage(message: WebRTCMessage): void {
         if (this.component.id == message.componentId) {
-            this.Log("PutWebRTCMessage userName: " + message.userName + " rigOwnerUsername: " + message.rigOwnerUsername);
+            this.Log("PutWebRTCMessage userId: " + message.userId + " rigOwnerUserId: " + message.rigOwnerUserId);
 
             if (this.streamer != null) {
                 this.streamer.PutWebRTCMessage(message);

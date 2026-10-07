@@ -42,7 +42,7 @@ export default class SignalR {
                     Debug.Error(SignalR.GetName(), "incoming web-rtc-message error Server.rig.rig.id (" + Server.rig.rig.id + ") !== message.rigId (" + webRTCMessage.rigId + ")");
                 }
 
-                Debug.Log(LogSettingType.SignalR, undefined, SignalR.GetName(), "incoming web-rtc-message rigId:" + webRTCMessage.rigId + " componentId:" + webRTCMessage.componentId + " userName: " + webRTCMessage.userName + " rigOwnerUsername: " + webRTCMessage.rigOwnerUsername);
+                Debug.Log(LogSettingType.SignalR, undefined, SignalR.GetName(), "incoming web-rtc-message rigId:" + webRTCMessage.rigId + " componentId:" + webRTCMessage.componentId + " userId: " + webRTCMessage.userId + " rigOwnerUserId: " + webRTCMessage.rigOwnerUserId);
                 Server.rig.PutWebRTCMessage(webRTCMessage);
             }
             else {
@@ -187,11 +187,11 @@ export default class SignalR {
 
     public static SendWebRTCMessage(message: WebRTCMessage): void {
         if (SignalR.hubConnection != null && SignalR.IsConnected()) {
-            Debug.Log(LogSettingType.SignalR, undefined, SignalR.GetName(), "outgoing SendWebRTCMessage rigId: " + message.rigId + " componentId:" + message.componentId + " userName: " + message.userName + " rigOwnerUsername: " + message.rigOwnerUsername);
+            Debug.Log(LogSettingType.SignalR, undefined, SignalR.GetName(), "outgoing SendWebRTCMessage rigId: " + message.rigId + " componentId:" + message.componentId + " userId: " + message.userId + " rigOwnerUserId: " + message.rigOwnerUserId);
 
             SignalR.hubConnection.invoke("SendWebRTCMessage", message)
                 .then(() => {
-                    Debug.Log(LogSettingType.SignalR, undefined, SignalR.GetName(), "outgoing SendWebRTCMessage success rigId: " + message.rigId + " componentId:" + message.componentId + " userName: " + message.userName + " rigOwnerUsername: " + message.rigOwnerUsername);
+                    Debug.Log(LogSettingType.SignalR, undefined, SignalR.GetName(), "outgoing SendWebRTCMessage success rigId: " + message.rigId + " componentId:" + message.componentId + " userId: " + message.userId + " rigOwnerUserId: " + message.rigOwnerUserId);
                 })
                 .catch((err) => {
                     Debug.Error(SignalR.GetName(), "outgoing SendWebRTCMessage error: " + err);
