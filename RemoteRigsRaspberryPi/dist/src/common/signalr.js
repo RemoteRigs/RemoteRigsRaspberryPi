@@ -9,12 +9,15 @@ export default class SignalR {
     static { this.reconnectTimer = null; }
     static { this.lastUniqueCode = null; }
     static { this.intentionalStop = false; }
+    static { this.signInRetryTimer = null; }
+    static { this.signInAttempts = 0; }
     static GetName() {
         return "SignalR";
     }
     static StartConnection(uniquecode) {
         SignalR.lastUniqueCode = uniquecode;
         SignalR.intentionalStop = false;
+        SignalR.CancelSignInRetry();
         Debug.LogAlways(SignalR.GetName(), "initiating hub connection... url: '" + Server.signalr + "'", false);
         SignalR.hubConnection = new signalR.HubConnectionBuilder()
             .withUrl(Server.signalr)
@@ -33,7 +36,7 @@ export default class SignalR {
                 if (Server.rig.rig.id !== webRTCMessage.rigId) {
                     Debug.Error(SignalR.GetName(), "incoming web-rtc-message error Server.rig.rig.id (" + Server.rig.rig.id + ") !== message.rigId (" + webRTCMessage.rigId + ")");
                 }
-                Debug.Log(LogSettingType.SignalR, undefined, SignalR.GetName(), "incoming web-rtc-message rigId:" + webRTCMessage.rigId + " componentId:" + webRTCMessage.componentId + " userName: " + webRTCMessage.userName + " rigOwnerUsername: " + webRTCMessage.rigOwnerUsername);
+                Debug.Log(LogSettingType.SignalR, undefined, SignalR.GetName(), "incoming web-rtc-message rigId:" + webRTCMessage.rigId + " componentId:" + webRTCMessage.componentId + " userId: " + webRTCMessage.userId + " rigOwnerUserId: " + webRTCMessage.rigOwnerUserId);
                 Server.rig.PutWebRTCMessage(webRTCMessage);
             }
             else {
@@ -61,6 +64,8 @@ export default class SignalR {
         });
         SignalR.hubConnection.onclose((error) => {
             Debug.LogAlways(SignalR.GetName(), "hub connection closed" + (error ? (": " + error) : ""), true);
+            // a new connection signs in itself (StartConnection)
+            SignalR.CancelSignInRetry();
             SignalR.ScheduleReconnect();
         });
         SignalR.hubConnection
@@ -76,7 +81,6 @@ export default class SignalR {
     }
     static ScheduleReconnect() {
         if (SignalR.intentionalStop) {
-            1;
             return;
         }
         if (SignalR.reconnectTimer != null) {
@@ -91,9 +95,35 @@ export default class SignalR {
             }
         }, 30000);
     }
+    /// The server refuses a sign in while another connection is still signed in as this rig. After a network drop
+    /// that is our own old connection: the server only drops it after the SignalR timeout (30s). The server also
+    /// refuses (with the same empty answer) when there are too many sign in attempts from this IP address.
+    /// So keep trying: after 5s, 10s, 20s and then every 30s.
+    static ScheduleSignInRetry(uniquecode) {
+        if (SignalR.intentionalStop || SignalR.signInRetryTimer != null) {
+            return;
+        }
+        SignalR.signInAttempts++;
+        const delay = Math.min(5000 * Math.pow(2, SignalR.signInAttempts - 1), 30000);
+        Debug.LogAlways(SignalR.GetName(), "retrying sign in in " + (delay / 1000) + "s (attempt " + SignalR.signInAttempts + ")...", true);
+        SignalR.signInRetryTimer = setTimeout(() => {
+            SignalR.signInRetryTimer = null;
+            if (!SignalR.intentionalStop) {
+                SignalR.SignIn(uniquecode);
+            }
+        }, delay);
+    }
+    static CancelSignInRetry() {
+        if (SignalR.signInRetryTimer != null) {
+            clearTimeout(SignalR.signInRetryTimer);
+            SignalR.signInRetryTimer = null;
+        }
+        SignalR.signInAttempts = 0;
+    }
     static StopConnection() {
         Debug.Log(LogSettingType.SignalR, undefined, SignalR.GetName(), "stopping hub connection...");
         SignalR.intentionalStop = true;
+        SignalR.CancelSignInRetry();
         if (SignalR.reconnectTimer != null) {
             clearTimeout(SignalR.reconnectTimer);
             SignalR.reconnectTimer = null;
@@ -116,9 +146,12 @@ export default class SignalR {
             SignalR.hubConnection.invoke('SignIn', uniquecode)
                 .then((rigClientViewModel) => {
                 if (rigClientViewModel.rigModelViewModel == undefined) {
+                    // unknown code, the rig is still signed in on another (old) connection, or too many attempts
                     Debug.LogAlways(SignalR.GetName(), "sign in to server failed! GUID: " + uniquecode, true);
+                    SignalR.ScheduleSignInRetry(uniquecode);
                 }
                 else {
+                    SignalR.CancelSignInRetry();
                     Debug.LogAlways(SignalR.GetName(), "sign in to server successful", true);
                     Debug.LogAlways(SignalR.GetName(), "rig #" + rigClientViewModel.id + " '" + rigClientViewModel.name + "'", true);
                     Debug.LogAlways(SignalR.GetName(), "rig model #" + rigClientViewModel.rigModelViewModel.id + " '" + rigClientViewModel.rigModelViewModel.name + "'", true);
@@ -157,10 +190,10 @@ export default class SignalR {
     }
     static SendWebRTCMessage(message) {
         if (SignalR.hubConnection != null && SignalR.IsConnected()) {
-            Debug.Log(LogSettingType.SignalR, undefined, SignalR.GetName(), "outgoing SendWebRTCMessage rigId: " + message.rigId + " componentId:" + message.componentId + " userName: " + message.userName + " rigOwnerUsername: " + message.rigOwnerUsername);
+            Debug.Log(LogSettingType.SignalR, undefined, SignalR.GetName(), "outgoing SendWebRTCMessage rigId: " + message.rigId + " componentId:" + message.componentId + " userId: " + message.userId + " rigOwnerUserId: " + message.rigOwnerUserId);
             SignalR.hubConnection.invoke("SendWebRTCMessage", message)
                 .then(() => {
-                Debug.Log(LogSettingType.SignalR, undefined, SignalR.GetName(), "outgoing SendWebRTCMessage success rigId: " + message.rigId + " componentId:" + message.componentId + " userName: " + message.userName + " rigOwnerUsername: " + message.rigOwnerUsername);
+                Debug.Log(LogSettingType.SignalR, undefined, SignalR.GetName(), "outgoing SendWebRTCMessage success rigId: " + message.rigId + " componentId:" + message.componentId + " userId: " + message.userId + " rigOwnerUserId: " + message.rigOwnerUserId);
             })
                 .catch((err) => {
                 Debug.Error(SignalR.GetName(), "outgoing SendWebRTCMessage error: " + err);
