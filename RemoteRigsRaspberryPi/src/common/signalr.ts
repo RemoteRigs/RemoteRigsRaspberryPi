@@ -10,6 +10,8 @@ export default class SignalR {
     private static reconnectTimer: NodeJS.Timeout | null = null;
     private static lastUniqueCode: string | null = null;
     private static intentionalStop: boolean = false;
+    private static signInRetryTimer: NodeJS.Timeout | null = null;
+    private static signInAttempts: number = 0;
 
     private static GetName(): string {
         return "SignalR";
@@ -19,6 +21,7 @@ export default class SignalR {
 
         SignalR.lastUniqueCode = uniquecode;
         SignalR.intentionalStop = false;
+        SignalR.CancelSignInRetry();
 
         Debug.LogAlways(SignalR.GetName(), "initiating hub connection... url: '" + Server.signalr + "'", false);
 
@@ -75,6 +78,8 @@ export default class SignalR {
 
         SignalR.hubConnection.onclose((error) => {
             Debug.LogAlways(SignalR.GetName(), "hub connection closed" + (error ? (": " + error) : ""), true);
+            // a new connection signs in itself (StartConnection)
+            SignalR.CancelSignInRetry();
             SignalR.ScheduleReconnect();
         });
 
@@ -91,7 +96,7 @@ export default class SignalR {
     }
 
     private static ScheduleReconnect(): void {
-        if (SignalR.intentionalStop) {1
+        if (SignalR.intentionalStop) {
             return;
         }
 
@@ -111,10 +116,44 @@ export default class SignalR {
         }, 30000);
     }
 
+    /// The server refuses a sign in while another connection is still signed in as this rig. After a network drop
+    /// that is our own old connection: the server only drops it after the SignalR timeout (30s). The server also
+    /// refuses (with the same empty answer) when there are too many sign in attempts from this IP address.
+    /// So keep trying: after 5s, 10s, 20s and then every 30s.
+    private static ScheduleSignInRetry(uniquecode: string): void {
+        if (SignalR.intentionalStop || SignalR.signInRetryTimer != null) {
+            return;
+        }
+
+        SignalR.signInAttempts++;
+
+        const delay = Math.min(5000 * Math.pow(2, SignalR.signInAttempts - 1), 30000);
+
+        Debug.LogAlways(SignalR.GetName(), "retrying sign in in " + (delay / 1000) + "s (attempt " + SignalR.signInAttempts + ")...", true);
+
+        SignalR.signInRetryTimer = setTimeout(() => {
+            SignalR.signInRetryTimer = null;
+
+            if (!SignalR.intentionalStop) {
+                SignalR.SignIn(uniquecode);
+            }
+        }, delay);
+    }
+
+    private static CancelSignInRetry(): void {
+        if (SignalR.signInRetryTimer != null) {
+            clearTimeout(SignalR.signInRetryTimer);
+            SignalR.signInRetryTimer = null;
+        }
+
+        SignalR.signInAttempts = 0;
+    }
+
     public static StopConnection(): void {
         Debug.Log(LogSettingType.SignalR, undefined, SignalR.GetName(), "stopping hub connection...");
 
         SignalR.intentionalStop = true;
+        SignalR.CancelSignInRetry();
 
         if (SignalR.reconnectTimer != null) {
             clearTimeout(SignalR.reconnectTimer);
@@ -141,9 +180,14 @@ export default class SignalR {
             SignalR.hubConnection.invoke('SignIn', uniquecode)
                 .then((rigClientViewModel: RigClientViewModel) => {
                     if (rigClientViewModel.rigModelViewModel == undefined) {
+                        // unknown code, the rig is still signed in on another (old) connection, or too many attempts
                         Debug.LogAlways(SignalR.GetName(), "sign in to server failed! GUID: " + uniquecode, true);
+
+                        SignalR.ScheduleSignInRetry(uniquecode);
                     }
                     else {
+                        SignalR.CancelSignInRetry();
+
                         Debug.LogAlways(SignalR.GetName(), "sign in to server successful", true);
                         Debug.LogAlways(SignalR.GetName(), "rig #" + rigClientViewModel.id + " '" + rigClientViewModel.name + "'", true);
                         Debug.LogAlways(SignalR.GetName(), "rig model #" + rigClientViewModel.rigModelViewModel.id + " '" + rigClientViewModel.rigModelViewModel.name + "'", true);
