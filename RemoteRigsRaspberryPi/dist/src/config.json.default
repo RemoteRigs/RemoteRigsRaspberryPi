@@ -1,6 +1,6 @@
 {
   "server": {
-    "url": "http://192.168.178.48"
+    "url": "https://remoterigs.com"
   },
   "rig": {
     "uniquecode": "{fill}"
