@@ -173,9 +173,16 @@ export default class WebRTCStreamerWrapper {
     }
     async FlushBufferedCandidates(sessionId) {
         const buffer = this.candidateBuffer.get(sessionId);
+        this.candidateBuffer.delete(sessionId);
         if (buffer && buffer.length > 0) {
             this.Log(`Flushing ${buffer.length} buffered ICE candidates for session ${sessionId}`);
-            this.candidateBuffer.delete(sessionId);
+            // the buffered candidates were never added: add them now that the remote description is set
+            for (const candidateMessage of buffer) {
+                const message = new WebRTCMessage();
+                message.sessionId = sessionId;
+                message.message = candidateMessage;
+                await this.AddIceCandidate(message);
+            }
         }
     }
     async GetIceServers(message) {
