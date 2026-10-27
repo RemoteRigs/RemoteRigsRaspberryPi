@@ -1,9 +1,13 @@
-import { spawn } from 'child_process';
+import { spawn, spawnSync } from 'child_process';
 import axios from 'axios';
 import { LogSettingType, VideoType, WebRTCMessage } from '../models/models.js';
 import SignalR from './signalr.js';
 import Debug from './debug.js';
 export default class WebRTCStreamerWrapper {
+    // one webrtc-streamer process for the whole client: every sign in creates new components (and wrappers),
+    // the process is only restarted when the TURN credential changed
+    static { this.sharedProcess = null; }
+    static { this.sharedTurnServer = null; }
     constructor(component, clientRTCConfigurationViewModel, videoType) {
         this.component = component;
         this.clientRTCConfigurationViewModel = clientRTCConfigurationViewModel;
@@ -41,6 +45,10 @@ export default class WebRTCStreamerWrapper {
         }
         // Stop webrtc-streamer process
         if (this.webrtcStreamerProcess) {
+            if (WebRTCStreamerWrapper.sharedProcess === this.webrtcStreamerProcess) {
+                WebRTCStreamerWrapper.sharedProcess = null;
+                WebRTCStreamerWrapper.sharedTurnServer = null;
+            }
             this.webrtcStreamerProcess.kill();
             this.webrtcStreamerProcess = null;
         }
@@ -92,41 +100,99 @@ export default class WebRTCStreamerWrapper {
         }
     }
     async StartWebRTCStreamer() {
-        try {
-            const response = await this.streamerClient.get('/api/version');
-            this.Log("webrtc-streamer is already running: " + JSON.stringify(response));
-            return;
+        const turnServer = this.clientRTCConfigurationViewModel.turnServer ?? "";
+        const running = WebRTCStreamerWrapper.sharedProcess;
+        if (running != null && running.exitCode === null && running.signalCode === null) {
+            if (WebRTCStreamerWrapper.sharedTurnServer === turnServer) {
+                this.Log("webrtc-streamer is already running with the current TURN credential");
+                this.webrtcStreamerProcess = running;
+                return;
+            }
+            // a new sign in brought a new TURN credential (the old one may have been deleted at Metered)
+            this.Log("TURN credential changed, restarting webrtc-streamer...");
+            await WebRTCStreamerWrapper.StopProcess(running);
         }
-        catch (err) {
+        else if (await this.IsStreamerResponding()) {
+            // started by someone else: its TURN credential is unknown, so restart it with the current one
+            this.Log("webrtc-streamer is running from an unknown streamerProcess, restarting it with the current TURN credential...");
+            spawnSync("pkill", ["-x", "webrtc-streamer"]);
+            await this.WaitUntilStreamerStopped();
+        }
+        else {
             this.Log("webrtc-streamer not running, starting it...");
         }
         const args = [
             "-H", `0.0.0.0:${this.STREAMER_PORT}`,
             "-s",
             //"--stun", this.clientRTCConfigurationViewModel.stunServer,
-            "--turn", this.clientRTCConfigurationViewModel.turnServer
         ];
+        if (turnServer != "") {
+            args.push("--turn", turnServer);
+        }
+        else {
+            this.Log("no TURN credential received from the server, starting webrtc-streamer without TURN");
+        }
         const command = "webrtc-streamer";
-        this.webrtcStreamerProcess = spawn(command, args);
-        if (this.webrtcStreamerProcess != null) {
-            if (this.webrtcStreamerProcess.stdout != null) {
-                this.webrtcStreamerProcess.stdout.on("data", (data) => {
-                    this.Log(`webrtc-streamer stdout: ${data}`);
-                });
-            }
-            if (this.webrtcStreamerProcess.stderr != null) {
-                this.webrtcStreamerProcess.stderr.on("data", (data) => {
-                    this.Log(`webrtc-streamer stderr: ${data}`);
-                });
-            }
-            this.webrtcStreamerProcess.on("error", (err) => {
-                this.Error(`webrtc-streamer error: ${JSON.stringify(err)}`);
-            });
-            this.webrtcStreamerProcess.on("close", (code) => {
-                this.Log(`webrtc-streamer exited with code ${code}`);
+        const streamerProcess = spawn(command, args);
+        this.webrtcStreamerProcess = streamerProcess;
+        WebRTCStreamerWrapper.sharedProcess = streamerProcess;
+        WebRTCStreamerWrapper.sharedTurnServer = turnServer;
+        if (streamerProcess.stdout != null) {
+            streamerProcess.stdout.on("data", (data) => {
+                this.Log(`webrtc-streamer stdout: ${data}`);
             });
         }
+        if (streamerProcess.stderr != null) {
+            streamerProcess.stderr.on("data", (data) => {
+                this.Log(`webrtc-streamer stderr: ${data}`);
+            });
+        }
+        streamerProcess.on("error", (err) => {
+            this.Error(`webrtc-streamer error: ${JSON.stringify(err)}`);
+        });
+        streamerProcess.on("close", (code) => {
+            this.Log(`webrtc-streamer exited with code ${code}`);
+            if (WebRTCStreamerWrapper.sharedProcess === streamerProcess) {
+                WebRTCStreamerWrapper.sharedProcess = null;
+                WebRTCStreamerWrapper.sharedTurnServer = null;
+            }
+        });
         this.Log("Spawned webrtc-streamer process: " + command);
+    }
+    async IsStreamerResponding() {
+        try {
+            await this.streamerClient.get('/api/version');
+            return true;
+        }
+        catch (err) {
+            return false;
+        }
+    }
+    async WaitUntilStreamerStopped() {
+        for (let i = 0; i < 20; i++) {
+            if (!(await this.IsStreamerResponding())) {
+                return;
+            }
+            await new Promise(resolve => setTimeout(resolve, 250));
+        }
+        this.Error("webrtc-streamer did not stop within 5 seconds");
+    }
+    static StopProcess(streamerProcess) {
+        return new Promise(resolve => {
+            if (streamerProcess.exitCode !== null || streamerProcess.signalCode !== null) {
+                resolve();
+                return;
+            }
+            const timer = setTimeout(() => {
+                streamerProcess.kill("SIGKILL");
+                resolve();
+            }, 5000);
+            streamerProcess.once("exit", () => {
+                clearTimeout(timer);
+                resolve();
+            });
+            streamerProcess.kill();
+        });
     }
     async WaitForStreamer() {
         const maxRetries = 20;
