@@ -121,10 +121,12 @@ export default class WebRTCStreamerWrapper {
         else {
             this.Log("webrtc-streamer not running, starting it...");
         }
+        const stunServer = this.clientRTCConfigurationViewModel.stunServer ?? "";
         const args = [
             "-H", `0.0.0.0:${this.STREAMER_PORT}`,
-            "-s",
-            //"--stun", this.clientRTCConfigurationViewModel.stunServer,
+            // "-s<host:port>" (no space): our own STUN server, so the rig also has a public (srflx) candidate;
+            // "-s-" = no STUN
+            stunServer != "" ? `-s${stunServer}` : "-s-",
         ];
         if (turnServer != "") {
             args.push("--turn", turnServer);
