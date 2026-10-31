@@ -1,5 +1,6 @@
 import Debug from '../common/debug.js';
 import WebRTCStreamerWrapper from "../common/webrtc-streamer-wrapper.js";
+import NativeWebRTCStreamer from "../common/native/native-webrtc-streamer.js";
 import Code from "../common/code.js";
 import StatusNumber from './status/status-number.js';
 import StatusState from './status/status-state.js';
@@ -120,9 +121,17 @@ export default class Component {
             var devicePath = this.GetProperty("devicepath");
             if (devicePath != undefined) {
                 if (this.clientRTCConfigurationViewModel != undefined) {
-                    this.streamer = new WebRTCStreamerWrapper(this, this.clientRTCConfigurationViewModel, this.rig.rig.videoType);
+                    // "native" = node-datachannel + ffmpeg, anything else = the webrtc-streamer binary;
+                    // per camera with the property 'streamer', or for the whole Pi with REMOTERIGS_STREAMER
+                    var streamerType = (this.property.hasOwnProperty("streamer") ? this.GetProperty("streamer") : "") || process.env["REMOTERIGS_STREAMER"] || "webrtc-streamer";
+                    if (streamerType.toLowerCase() == "native") {
+                        this.streamer = new NativeWebRTCStreamer(this, this.clientRTCConfigurationViewModel, this.rig.rig.videoType);
+                    }
+                    else {
+                        this.streamer = new WebRTCStreamerWrapper(this, this.clientRTCConfigurationViewModel, this.rig.rig.videoType);
+                    }
                     this.streamer.Start().catch(console.error);
-                    this.Log("init webcam streamer success: " + devicePath);
+                    this.Log("init webcam streamer (" + streamerType + ") success: " + devicePath);
                 }
                 else {
                     this.Log("init webcam FAILED; missing clientRTCConfigurationViewModel");
